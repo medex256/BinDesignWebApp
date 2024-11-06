@@ -131,6 +131,6 @@ def manage_users():
     return render_template('manage_users.html', users=users, current_user=current_user)
 
 
-#change
+
 if __name__ == '__main__':
     app.run(debug=True)
