@@ -73,7 +73,15 @@
                 <li><a href="{{url_for('login')}}">Login</a></li>
                 <li><a href="{{url_for('register')}}">Register</a></li>
             </ul>
-           
+            {% if current_user.is_authenticated %}
+            <div class="user-section">
+                <div class="user-icon">{{ current_user.username[0].upper() }}</div>
+                <span>{{ current_user.username }}</span>
+                <form action="{{ url_for('logout') }}" method="post">
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </div>
+        {% endif %}
         </nav>
     </header>
     <div class="container">

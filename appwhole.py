@@ -117,11 +117,10 @@ def login():
             flash('Invalid username or password', 'error')
     return render_template('login.html', form=form)
 
-@app.route('/logout')
+@app.route('/logout', methods=['POST'])
 @login_required
 def logout():
     logout_user()
-    flash('Logged out successfully!', 'success')
     return redirect(url_for('login'))
 
 @app.route('/manage_users')
