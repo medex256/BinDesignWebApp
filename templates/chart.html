@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recycling Chart</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; margin: 20px; 
+        }
+        .plot-container {
+            display: flex; /* Use flexbox for centering */
+            justify-content: center; /* Center horizontally */
+            overflow-x: auto; /* Horizontal scrollbar */
+        }
+        table {
+            width: 90%; /* Set table width to 90% */
+            margin: 10px auto; /* Center the table with auto margins */
+            border-collapse: collapse; /* No space between borders */
+        }
+        th, td {
+            border: 1px solid #ddd; /* Light grey border */
+            padding: 8px; /* Padding inside cells */
+            text-align: center; /* Centered text */
+            width: 33.33%; /* Even width for three columns */
+        }
+        th {
+            background-color: #f2f2f2; /* Light grey background for headers */
+        }
+    </style>
+</head>
+<body>
+    <h1>Recycling Chart</h1>
+    <div class="plot-container">
+        {{ plot|safe }}
+    </div>
+    <table>
+        <tr>
+            <th>Recycling in Last Month</th>
+            <th>Longest Streak</th>
+            <th>Current Streak</th>
+        </tr>
+        <tr>
+            <td>{{ recycling_last_month|safe }}</td>
+            <td>{{ longest_streak|safe }}</td>
+            <td>{{ current_streak|safe }}</td>
+        </tr>
+        <tr>
+            <td>{{ recycling_last_month_dates|safe }}</td>
+            <td>{{ longest_streak_dates|safe }}</td>
+            <td>{{ current_streak_dates|safe }}</td>
+        </tr>
+    </table>
+</body>
+</html>
