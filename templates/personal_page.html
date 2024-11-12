@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recycling Chart</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; /* Remove default margin */
+            padding: 20px;
+        }
+        .toolbar {
+            background-color: #333;
+            padding: 1rem;
+            margin-bottom: 20px;
+        }
+        .toolbar ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+        .toolbar li {
+            margin-right: 20px;
+        }
+        .toolbar a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+        }
+        .toolbar a:hover {
+            background-color: #555;
+            border-radius: 4px;
+        }
+        .user-section {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            color: white;
+        }
+        .user-icon {
+            background-color: #4CAF50;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .plot-container {
+            display: flex;
+            justify-content: center;
+            overflow-x: auto;
+        }
+        table {
+            width: 90%;
+            margin: 10px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            width: 33.33%;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    
+    <h1>Recycling Chart</h1>
+    {% include 'toolbar.html' %}
+    <div class="plot-container">
+        {{ plot|safe }}
+    </div>
+    <table>
+        <tr>
+            <th>Recycling in Last Month</th>
+            <th>Longest Streak</th>
+            <th>Current Streak</th>
+        </tr>
+        <tr>
+            <td>{{ recycling_last_month|safe }}</td>
+            <td>{{ longest_streak|safe }}</td>
+            <td>{{ current_streak|safe }}</td>
+        </tr>
+        <tr>
+            <td>{{ recycling_last_month_dates|safe }}</td>
+            <td>{{ longest_streak_dates|safe }}</td>
+            <td>{{ current_streak_dates|safe }}</td>
+        </tr>
+    </table>
+</body>
+</html>

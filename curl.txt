@@ -1,0 +1,14 @@
+reference for the curl commands now to test the server. Should change to websocket later
+
+
+user id:24877000
+
+bin id:1
+
+curl -X POST -H "Content-Type: application/json" -d "{\"user_id\": 24877000, \"bin_id\": 1}" http://localhost:5000/start_session
+
+curl -X POST -H "Content-Type: application/json" -d "{\"user_id\": 24877000, \"bin_id\": 1, \"trash_count\": 5}" http://localhost:5000/end_session
+
+to add new bin or modify existing bin: (maybe this one don't need to be replaced)
+
+curl -X POST -H "Content-Type: application/json" -d "{    \"bin_id\": 1,    \"bin_full\": false,    \"bin_type\": \"recycling\",    \"bin_location\": \"Building A\"}" http://localhost:5000/add_bin

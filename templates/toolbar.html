@@ -4,11 +4,12 @@
     <nav class="toolbar">
         <ul>
             <li><a href="{{url_for('home')}}">Home</a></li>
-            <li><a href="{{url_for('manage_users')}}">manage_users</a></li>
             <li><a href="{{url_for('login')}}">Login</a></li>
             <li><a href="{{url_for('register')}}">Register</a></li>
         </ul>
         {% if current_user.is_authenticated %}
+        <li><a href="{{url_for('personal_page')}}">Personal page</a></li>
+        <li><a href="{{url_for('manage_users')}}">Manage_users</a></li>
         <div class="user-section">
             <div class="user-icon">{{ current_user.username[0].upper() }}</div>
             <span>{{ current_user.username }}</span>

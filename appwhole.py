@@ -1,12 +1,18 @@
 from flask import Flask, request, jsonify, render_template, flash, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date, time
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError, DataRequired, EqualTo
 import random
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+import plotly.offline as pyo
+from heatmap import heatmap, streak
+import pytz
+
+temp_sessions = {}
+
 
 # Create the Flask app
 app = Flask(__name__)
@@ -46,17 +52,18 @@ class User(db.Model, UserMixin):
                 return self.id
 
 class Session(db.Model):
-    sessionid = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    time_of_usage = db.Column(db.DateTime, nullable=False)
-    time_used = db.Column(db.Interval, nullable=False)
-    bin_id = db.Column(db.Integer, db.ForeignKey('bin.bin_id'), nullable=False)
-    trash_count = db.Column(db.Integer, default=0)
+    sessionid = db.Column(db.Integer, primary_key=True)#identifier of each session
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)#who is in the session
+    session_date = db.Column(db.Date, nullable=False)#date of use
+    session_time = db.Column(db.Time, nullable=False)#time of use
+    time_used = db.Column(db.Interval, nullable=False)#how long the user used 
+    bin_id = db.Column(db.Integer, db.ForeignKey('bin.bin_id'), nullable=False)#which bin
+    trash_count = db.Column(db.Integer, default=0)#how much rubbish
 
 class Leaderboard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True)
-    user_score = db.Column(db.Integer, default=0)
+    user_score = db.Column(db.Integer, default=1)
 
 class Bin(db.Model):
     bin_id = db.Column(db.Integer, primary_key=True)
@@ -85,6 +92,8 @@ class LoginForm(FlaskForm):
 with app.app_context():
     db.create_all()
 
+
+
 # Routes
 @app.route('/')
 def home():
@@ -105,14 +114,14 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('manage_users'))
+        return redirect(url_for('personal_page'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.user_password, form.user_password.data):
             login_user(user)
             flash('Logged in successfully!', 'success')
-            return redirect(url_for('manage_users'))
+            return redirect(url_for('personal_page'))
         else:
             flash('Invalid username or password', 'error')
     return render_template('login.html', form=form)
@@ -128,6 +137,221 @@ def logout():
 def manage_users():
     users = User.query.all()
     return render_template('manage_users.html', users=users, current_user=current_user)
+
+@app.route('/start_session', methods=['POST'])
+def start_session():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    bin_id = data.get('bin_id')
+    
+    if not user_id or not bin_id:
+        return jsonify({'error': 'Missing user_id or bin_id'}), 400
+    
+    # Store start time temporarily
+    current_time = datetime.now(pytz.UTC)
+    temp_sessions[f"{user_id}_{bin_id}"] = current_time
+    
+    return jsonify({
+        'message': 'Session started',
+        'start_time': current_time.isoformat()
+    }), 200
+
+@app.route('/end_session', methods=['POST'])
+def end_session():
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        bin_id = data.get('bin_id')
+        trash_count = data.get('trash_count', 0)
+        
+        if not user_id or not bin_id:
+            return jsonify({'error': 'Missing user_id or bin_id'}), 400
+        
+        session_key = f"{user_id}_{bin_id}"
+        start_time = temp_sessions.get(session_key)
+        
+        if not start_time:
+            return jsonify({'error': 'No active session found'}), 404
+        
+        # Calculate session duration
+        end_time = datetime.now(pytz.UTC)
+        duration = end_time - start_time
+        
+        # Create new session record
+        new_session = Session(
+            user_id=user_id,
+            bin_id=bin_id,
+            session_date=date.today(),
+            session_time=start_time.time(),
+            time_used=duration,
+            trash_count=trash_count
+        )
+        
+        # Update user's session count
+        user = User.query.get(user_id)
+        if user:
+            user.session_count += 1
+            
+            # Update or create leaderboard entry
+            leaderboard = Leaderboard.query.filter_by(user_id=user_id).first()
+            if not leaderboard:
+                leaderboard = Leaderboard(
+                    user_id=user_id,
+                    user_score=trash_count  # Initialize with current trash count
+                )
+                db.session.add(leaderboard)
+            else:
+                # Ensure user_score is initialized if it's None
+                if leaderboard.user_score is None:
+                    leaderboard.user_score = 0
+                leaderboard.user_score += trash_count
+        
+            try:
+                db.session.add(new_session)
+                db.session.commit()
+                # Clean up temporary session data
+                del temp_sessions[session_key]
+                
+                return jsonify({
+                    'message': 'Session ended successfully',
+                    'duration': str(duration),
+                    'trash_count': trash_count,
+                    'total_score': leaderboard.user_score
+                }), 200
+                
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({'error': str(e)}), 500
+        else:
+            return jsonify({'error': 'User not found'}), 404
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/add_bin', methods=['POST'])
+def add_bin():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+
+        # Validate required fields
+        required_fields = ['bin_id', 'bin_type', 'bin_location']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f"Missing required field: {field}"}), 400
+
+        bin_id = data['bin_id']
+        bin_type = data['bin_type']
+        bin_location = data['bin_location']
+        bin_full = data.get('bin_full', False)  # Default to False if not provided
+
+        # Check if bin exists
+        existing_bin = Bin.query.get(bin_id)
+
+        if existing_bin:
+            # Update existing bin
+            existing_bin.bin_full = bin_full
+            existing_bin.bin_type = bin_type
+            existing_bin.bin_location = bin_location
+            
+            db.session.commit()
+            
+            return jsonify({
+                "message": "Bin updated successfully",
+                "bin": {
+                    "bin_id": existing_bin.bin_id,
+                    "bin_type": existing_bin.bin_type,
+                    "bin_location": existing_bin.bin_location,
+                    "bin_full": existing_bin.bin_full
+                }
+            }), 200
+        else:
+            # Create new bin
+            new_bin = Bin(
+                bin_id=bin_id,
+                bin_full=bin_full,
+                bin_type=bin_type,
+                bin_location=bin_location
+            )
+            
+            db.session.add(new_bin)
+            db.session.commit()
+            
+            return jsonify({
+                "message": "New bin added successfully",
+                "bin": {
+                    "bin_id": new_bin.bin_id,
+                    "bin_type": new_bin.bin_type,
+                    "bin_location": new_bin.bin_location,
+                    "bin_full": new_bin.bin_full
+                }
+            }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "error": "Failed to process request",
+            "details": str(e)
+        }), 500
+
+
+
+@app.route('/personal_page')
+@login_required
+def personal_page():
+    # Get all sessions for the current user
+    user_sessions = Session.query.filter_by(user_id=current_user.id).all()
+    
+    # Format the dates for the heatmap
+    data = []
+    for session in user_sessions:
+        # Convert to string format YYYY-MM-DD
+        date_str = session.session_date.strftime('%Y-%m-%d')
+        data.append(date_str)
+
+    plot_html = pyo.plot(
+        figure_or_data = heatmap(data=data, weeks=32),
+        output_type = 'div',
+        config = {
+            "displaylogo": False,
+            'modeBarButtonsToRemove': ['pan2d','lasso2d','toImage'],
+        },
+    )
+
+    date_format = "%Y-%m-%d"
+
+    recycling_last_month, recycling_last_month_start, recycling_last_month_end, \
+    longest_streak, longest_streak_start, longest_streak_end, \
+    current_streak, current_streak_start, current_streak_end, current_streak_ago = streak(data)
+
+    # Get user's statistics from database
+    total_sessions = current_user.session_count
+    total_trash = db.session.query(db.func.sum(Session.trash_count))\
+        .filter_by(user_id=current_user.id).scalar() or 0
+    
+    # Get user's leaderboard position
+    leaderboard_entry = Leaderboard.query.filter_by(user_id=current_user.id).first()
+    user_score = leaderboard_entry.user_score if leaderboard_entry else 0
+
+    recycling_last_month_dates = "" if recycling_last_month == 0 else f"From: {recycling_last_month_start.strftime(date_format)} To: {recycling_last_month_end.strftime(date_format)}"
+    longest_streak_dates = "" if longest_streak == 0 else f"From: {longest_streak_start.strftime(date_format)} To: {longest_streak_end.strftime(date_format)}"
+    current_streak_dates = (f"Last recycled {current_streak_ago} days ago" if current_streak_ago > 0 else "") if current_streak == 0 else f"From: {current_streak_start.strftime(date_format)} To: {current_streak_end.strftime(date_format)}"
+
+    return render_template(
+        'personal_page.html', 
+        plot=plot_html,
+        recycling_last_month=f"{recycling_last_month} total",
+        longest_streak=f"{longest_streak} days",
+        current_streak=f"{current_streak} days",
+        recycling_last_month_dates=recycling_last_month_dates,
+        longest_streak_dates=longest_streak_dates,
+        current_streak_dates=current_streak_dates,
+        total_sessions=total_sessions,
+        total_trash=total_trash,
+        user_score=user_score,
+        username=current_user.username
+    )
 
 
 
