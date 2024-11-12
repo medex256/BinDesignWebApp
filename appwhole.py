@@ -11,6 +11,7 @@ import plotly.offline as pyo
 from heatmap import heatmap, streak
 import pytz
 
+
 temp_sessions = {}
 
 
@@ -98,6 +99,7 @@ with app.app_context():
 @app.route('/')
 def home():
     return render_template('home.html')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -353,6 +355,9 @@ def personal_page():
         username=current_user.username
     )
 
+@app.route('/test_navbar')
+def test_navbar():
+    return render_template('test_navbar.html')
 
 
 if __name__ == '__main__':

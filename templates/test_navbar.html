@@ -1,7 +1,7 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script defer src="js/theme.js"></script>
-  <link rel="stylesheet" href="css/navbar.css" />
+  <script defer src="jv/theme.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link
     href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap"
     rel="stylesheet"
@@ -12,7 +12,7 @@
   <nav class="navbar">
     <ul class="navbar-nav">
       <li class="logo">
-        <a href="home.html" class="nav-link">
+        <a href="{{ url_for('home') }}" class="nav-link">
           <span class="link-text logo-text">The SPJ</span>
           <svg
             aria-hidden="true"
@@ -240,7 +240,7 @@
   </nav>
 
     <main>
-      <h1>Hello, User!</h1>
+      <h1>Hello, {{current_user.username}}!</h1>
         
       <h3>About Us</h3>
       <p>
