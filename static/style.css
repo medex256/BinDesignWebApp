@@ -36,7 +36,7 @@
   }
   
   main {
-    background-color: #232323;
+    background-color: #2f2f2f;
     margin-left: 5rem;
     padding: 1rem;
   }
@@ -50,7 +50,7 @@
   }
 
   .container {
-    background-color: greenyellow;
+    background-color: rgb(24, 24, 24);
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
