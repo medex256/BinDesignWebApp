@@ -66,21 +66,22 @@
 </head>
 <body>
     {% include 'toolbar.html' %}
-    <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="messages">
-                    {% for category, message in messages %}
-                        <div class="{{ category }}">{{ message }}</div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-        
-        
-       
     
-    <form method="POST" action="{{ url_for('login') }}">
+  {% include 'navbar.html' %}
+    <main>
+        <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        
+        {% if messages %}
+        <div class="messages">
+        {% for category, message in messages %}
+        <div class="{{ category }}">{{ message }}</div>
+        {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% endwith %}
+        <form method="POST" action="{{ url_for('login') }}">
         {{ form.hidden_tag() }}
         <div>
             {{ form.username.label }}
@@ -91,7 +92,8 @@
             {{ form.user_password }}
         </div>
         {{ form.submit }}
-    </form>
-    <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+        </form>
+        <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+    </main>
 </body>
 </html>
