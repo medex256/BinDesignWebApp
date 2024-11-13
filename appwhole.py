@@ -64,7 +64,7 @@ class Session(db.Model):
 class Leaderboard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True)
-    username = db.Column(db.String(80), nullable=False)
+    
     user_score = db.Column(db.Integer, default=1)
     
 
@@ -365,8 +365,35 @@ def test_navbar():
 @app.route('/leaderboard')
 @login_required
 def leaderboard():
-    leaderboard = Leaderboard.query.all()
-    return render_template('leaderboard.html', leaderboard = leaderboard)
+    # Calculate total trash count for each user
+    user_totals = db.session.query(
+        User.id,
+        User.username,
+        db.func.sum(Session.trash_count).label('total_trash')
+    ).join(Session, User.id == Session.user_id)\
+     .group_by(User.id)\
+     .order_by(db.func.sum(Session.trash_count).desc())\
+     .all()
+
+    # Create ranked list with user data
+    ranked_users = []
+    for index, (user_id, username, total_trash) in enumerate(user_totals, 1):
+        ranked_users.append({
+            'rank': index,
+            'username': username,
+            'trash_count': int(total_trash or 0),
+            'is_current': user_id == current_user.id
+        })
+    
+    # Find current user's rank
+    current_user_rank = next(
+        (user for user in ranked_users if user['is_current']),
+        {'rank': '-', 'username': current_user.username, 'trash_count': 0, 'is_current': True}
+    )
+
+    return render_template('leaderboard.html', 
+                         leaderboard=ranked_users, 
+                         current_user_rank=current_user_rank)
 
 
 if __name__ == '__main__':
