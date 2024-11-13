@@ -55,9 +55,6 @@
           </a>
         </li>
 
-        
-        
-        
         <!-- Link to QR -->
         <li class="nav-item">
           <a onclick="logMessage()" class="nav-link"> 
@@ -85,7 +82,6 @@
         
 
         <!-- Link to if Logged in, then Profile, otherwise LoginPage Page -->
-
         {% if not current_user.is_authenticated %}
         <li class="nav-item">
           <a href="{{ url_for('login')}}" class="nav-link">
