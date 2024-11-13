@@ -33,7 +33,7 @@
 
         <!-- Link to Leaderboard Page -->
         <li class="nav-item"> 
-          <a href="#" class="nav-link">
+          <a href="{{ url_for('leaderboard')}}" class="nav-link">
             <svg
               aria-hidden="true"
               focusable="false"
@@ -140,7 +140,7 @@
 
         {% if current_user.is_authenticated %}
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="{{ url_for('personal_page') }}" class="nav-link">
             <svg
               aria-hidden="true"
               focusable="false"
