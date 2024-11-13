@@ -10,7 +10,7 @@
   }
   
   body {
-    color: black;
+    color: white;
     background-color: white;
     margin: 0;
     padding: 0;
@@ -50,6 +50,7 @@
   }
 
   .container {
+    color: whitesmoke;
     background-color: rgb(24, 24, 24);
     padding: 30px;
     border-radius: 10px;
