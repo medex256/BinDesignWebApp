@@ -375,9 +375,9 @@ def personal_page():
         username=current_user.username
     )
 
-@app.route('/test_navbar')
-def test_navbar():
-    return render_template('test_navbar.html')
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 
 @app.route('/leaderboard')
