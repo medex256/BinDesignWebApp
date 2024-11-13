@@ -1,16 +1,4 @@
-<!DOCTYPE html>
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script defer src="js/theme.js"></script>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link
-    href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap"
-    rel="stylesheet"
-  />
-</head>
-
-<body>
-  <nav class="navbar">
+<nav class="navbar">
     <ul class="navbar-nav">
       <!-- Link to Home/Login Page -->
       <li class="logo">
@@ -130,7 +118,7 @@
             aria-hidden="true"
             focusable="false"
             data-prefix="fad"
-            data-icon="alien-monster"
+            data-icon="User Profile"
             role="img"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 448 512"
@@ -150,27 +138,3 @@
 
     </ul>
   </nav>
-
-  <main>
-      <h1>Hello, {{current_user.username}}!</h1>
-        
-      <h3>About Us</h3>
-      <p>
-        Welcome to The Sing Pro Jet, the innovators in sustainable smart technology! At the heart of our mission is the desire to make recycling effortless and efficient through cutting-edge IoT solutions. Our intelligent recycling bins are designed to transform waste management into a seamless and environmentally friendly experience.
-      </p>
-      <h3>Who We Are</h3>
-      <p>
-        We are a passionate team of environmentalists, engineers, and tech enthusiasts dedicated to leveraging the power of IoT to promote sustainability. Our goal is to reduce the carbon footprint and ensure that recycling is accessible to everyone, everywhere.
-      </p>
-      <h3>What We Do</h3>
-      <p>
-        Our smart recycling bins are equipped with advanced sensors and connectivity features that not only sort waste automatically but also provide real-time data to optimize waste collection and recycling processes. Whether it's a bustling city center or a quiet suburban neighborhood, our bins help communities keep their surroundings clean and green.
-      </p>
-      <h3>Our Vision</h3>
-      <p>
-        We envision a world where technology and sustainability go hand in hand. By providing innovative solutions, we aim to inspire individuals and organizations to adopt greener practices and contribute to a healthier planet.
-        Join us on our journey to revolutionize recycling and make a positive impact on the environment! 🌍
-      </p>
-      
-  </main>
-</body>
