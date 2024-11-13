@@ -10,7 +10,7 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, log
 import plotly.offline as pyo
 from heatmap import heatmap, streak
 import pytz
-
+import logging
 
 temp_sessions = {}
 
@@ -96,11 +96,27 @@ with app.app_context():
     db.create_all()
 
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+
+
 
 # Routes
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
+    if request.method == 'POST':
+        log_message()
     return render_template('home.html')
+
+def log_message():
+    logging.info('scan qrcode')
+
+@app.route('/static/app.js')
+def serve_js():
+    return app.send_static_file('app.js')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -142,8 +158,8 @@ def manage_users():
     users = User.query.all()
     return render_template('manage_users.html', users=users, current_user=current_user)
 
-@app.route('/start_session', methods=['POST'])
-def start_session():
+@app.route('/qrcode', methods=['POST'])
+def qrcode():
     data = request.get_json()
     user_id = data.get('user_id')
     bin_id = data.get('bin_id')
