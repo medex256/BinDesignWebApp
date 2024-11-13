@@ -46,7 +46,7 @@ class User(db.Model, UserMixin):
 
     def generate_user_id(self):
         while True:
-            id = str(random.randint(10000000, 99999999))
+            id = random.randint(10000000, 99999999)
             existing_user = User.query.filter_by(id=id).first()
             if not existing_user:
                 self.id = id
@@ -64,7 +64,9 @@ class Session(db.Model):
 class Leaderboard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True)
+    username = db.Column(db.String(80), nullable=False)
     user_score = db.Column(db.Integer, default=1)
+    
 
 class Bin(db.Model):
     bin_id = db.Column(db.Integer, primary_key=True)
@@ -358,6 +360,13 @@ def personal_page():
 @app.route('/test_navbar')
 def test_navbar():
     return render_template('test_navbar.html')
+
+
+@app.route('/leaderboard')
+@login_required
+def leaderboard():
+    leaderboard = Leaderboard.query.all()
+    return render_template('leaderboard.html', leaderboard = leaderboard)
 
 
 if __name__ == '__main__':
