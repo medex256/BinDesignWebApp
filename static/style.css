@@ -48,8 +48,6 @@
   }
 
   .container {
-    display:flex;
-    
     background-color: greenyellow;
     padding: 30px;
     border-radius: 10px;
