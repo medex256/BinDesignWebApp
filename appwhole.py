@@ -123,6 +123,8 @@ def serve_js():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if request.method == 'POST':
+        log_message()
     form = RegisterForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.user_password.data)
@@ -135,6 +137,8 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        log_message()
     if current_user.is_authenticated:
         return redirect(url_for('personal_page'))
     form = LoginForm()
@@ -157,17 +161,22 @@ def logout():
 @app.route('/manage_users')
 @login_required
 def manage_users():
+    if request.method == 'POST':
+        log_message()
     users = User.query.all()
     return render_template('manage_users.html', users=users, current_user=current_user)
 
 @app.route('/qrcode', methods=['POST'])
+@login_required  # Add this to ensure user is logged in
 def qrcode():
     data = request.get_json()
-    user_id = data.get('user_id')
     bin_id = data.get('bin_id')
     
-    if not user_id or not bin_id:
-        return jsonify({'error': 'Missing user_id or bin_id'}), 400
+    if not bin_id:
+        return jsonify({'error': 'Missing bin_id'}), 400
+        
+    # Get user_id from current logged in user
+    user_id = current_user.id
     
     # Store start time temporarily
     current_time = datetime.now(pytz.UTC)
@@ -175,6 +184,8 @@ def qrcode():
     
     return jsonify({
         'message': 'Session started',
+        'user_id': user_id,
+        'bin_id': bin_id,
         'start_time': current_time.isoformat()
     }), 200
 
@@ -322,6 +333,8 @@ def add_bin():
 @app.route('/personal_page')
 @login_required
 def personal_page():
+    if request.method == 'POST':
+        log_message()
     # Get all sessions for the current user
     user_sessions = Session.query.filter_by(user_id=current_user.id).all()
     
@@ -377,12 +390,16 @@ def personal_page():
 
 @app.route('/about')
 def about():
+    if request.method == 'POST':
+        log_message()
     return render_template('about.html')
 
 
 @app.route('/leaderboard')
 @login_required
 def leaderboard():
+    if request.method == 'POST':
+        log_message()
     # Calculate total trash count for each user
     user_totals = db.session.query(
         User.id,
