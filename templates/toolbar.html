@@ -4,9 +4,11 @@
     <nav class="toolbar">
         <ul>
             <li><a href="{{url_for('home')}}">Home</a></li>
+        {% if not current_user.is_authenticated %}
             <li><a href="{{url_for('login')}}">Login</a></li>
             <li><a href="{{url_for('register')}}">Register</a></li>
         </ul>
+        {% endif %}
         {% if current_user.is_authenticated %}
         <li><a href="{{url_for('personal_page')}}">Personal page</a></li>
         <li><a href="{{url_for('manage_users')}}">Manage_users</a></li>
