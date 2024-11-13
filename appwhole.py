@@ -167,13 +167,16 @@ def manage_users():
     return render_template('manage_users.html', users=users, current_user=current_user)
 
 @app.route('/qrcode', methods=['POST'])
+@login_required  # Add this to ensure user is logged in
 def qrcode():
     data = request.get_json()
-    user_id = data.get('user_id')
     bin_id = data.get('bin_id')
     
-    if not user_id or not bin_id:
-        return jsonify({'error': 'Missing user_id or bin_id'}), 400
+    if not bin_id:
+        return jsonify({'error': 'Missing bin_id'}), 400
+        
+    # Get user_id from current logged in user
+    user_id = current_user.id
     
     # Store start time temporarily
     current_time = datetime.now(pytz.UTC)
@@ -181,6 +184,8 @@ def qrcode():
     
     return jsonify({
         'message': 'Session started',
+        'user_id': user_id,
+        'bin_id': bin_id,
         'start_time': current_time.isoformat()
     }), 200
 
