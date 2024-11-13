@@ -114,7 +114,7 @@
         <!-- Link to if Logged in, then Profile, otherwise LoginPage Page -->
         {% if not current_user.is_authenticated %}
         <li class="nav-item">
-          <a href="#" class="nav-link">
+          <a href="{{ url_for('login')}}" class="nav-link">
             <svg
               aria-hidden="true"
               focusable="false"
