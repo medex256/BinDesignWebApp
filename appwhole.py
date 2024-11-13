@@ -116,7 +116,9 @@ def log_message():
 
 @app.route('/static/app.js')
 def serve_js():
-    return app.send_static_file('app.js')
+    return app.send_static_file('qrbutton.js')
+
+@app.route('/button', methods=['Get,' 'POST'])
 
 
 @app.route('/register', methods=['GET', 'POST'])
