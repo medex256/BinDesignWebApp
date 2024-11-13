@@ -243,7 +243,74 @@ button:hover {
     text-align: center;
     margin-top: 1rem;
 }
-
+/* from personal_page.html */
+.toolbar {
+  background-color: #333;
+  padding: 1rem;
+  margin-bottom: 20px;
+}
+.toolbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+.toolbar li {
+  margin-right: 20px;
+}
+.toolbar a {
+  color: white;
+  text-decoration: none;
+  padding: 8px 16px;
+}
+.toolbar a:hover {
+  background-color: #555;
+  border-radius: 4px;
+}
+.user-section {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  color: white;
+}
+.user-icon {
+  background-color: #4CAF50;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+}
+.logout-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+.plot-container {
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+}
+table {
+  width: 90%;
+  margin: 10px auto;
+  border-collapse: collapse;
+}
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  width: 33.33%;
+}
+th {
+  background-color: #f2f2f2;
  
 .dark {
   --text-primary: #b6b6b6;
