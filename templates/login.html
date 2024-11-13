@@ -4,70 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet" />
     <title>Login</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f2f5;
-        }
-        .container {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-        input {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: #1877f2;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #166fe5;
-        }
-        .messages {
-            margin-bottom: 1rem;
-        }
-        .error {
-            color: #dc3545;
-        }
-        .success {
-            color: #28a745;
-        }
-        .register-link {
-            text-align: center;
-            margin-top: 1rem;
-        }
-    </style>
 </head>
 <body>
-    {% include 'toolbar.html' %}
-    
-  {% include 'navbar.html' %}
+    {% include 'navbar.html' %}
     <main>
         <div class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -83,10 +25,7 @@
         {% endwith %}
         <form method="POST" action="{{ url_for('login') }}">
         {{ form.hidden_tag() }}
-        <div>
-            {{ form.username.label }}
-            {{ form.username }}
-        </div>
+        <div> {{ form.username.label }} {{ form.username }} </div>
         <div>
             {{ form.user_password.label }}
             {{ form.user_password }}
