@@ -114,12 +114,16 @@ def home():
 def log_message():
     logging.info('scan qrcode')
 
-@app.route('/static/app.js')
-def serve_js():
+@app.route('/static/qrbutton.js')
+def qrbutton_js():
     return app.send_static_file('qrbutton.js')
 
-@app.route('/button', methods=['Get,' 'POST'])
 
+@app.route('/about')
+def about():
+    if request.method == 'POST':
+        log_message()
+    return render_template('about.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -167,27 +171,49 @@ def manage_users():
     return render_template('manage_users.html', users=users, current_user=current_user)
 
 @app.route('/qrcode', methods=['POST'])
-@login_required  # Add this to ensure user is logged in
 def qrcode():
-    data = request.get_json()
-    bin_id = data.get('bin_id')
-    
-    if not bin_id:
-        return jsonify({'error': 'Missing bin_id'}), 400
+    try:
+        # Get bin_id directly from request data
+        bin_id = request.get_data(as_text=True)
         
-    # Get user_id from current logged in user
-    user_id = current_user.id
-    
-    # Store start time temporarily
-    current_time = datetime.now(pytz.UTC)
-    temp_sessions[f"{user_id}_{bin_id}"] = current_time
-    
-    return jsonify({
-        'message': 'Session started',
-        'user_id': user_id,
-        'bin_id': bin_id,
-        'start_time': current_time.isoformat()
-    }), 200
+        # Get client IP address
+        client_ip = request.remote_addr
+        
+        # Log the request for debugging
+        logging.info(f"Received request from IP: {client_ip} for bin_id: {bin_id}")
+        
+        # Validate bin_id is a valid integer
+        try:
+            bin_id = int(bin_id)
+        except ValueError:
+            return jsonify({'error': 'Invalid bin_id format. Must be an integer'}), 400
+            
+        # For now, use a test user (modify this according to your needs)
+        user = User.query.first()  # Or however you want to identify the user
+        if not user:
+            return jsonify({'error': 'No user found'}), 404
+            
+        user_id = user.id
+        
+        # Verify bin exists
+        bin_exists = Bin.query.get(bin_id)
+        if not bin_exists:
+            return jsonify({'error': 'Bin not found'}), 404
+        
+        # Store start time temporarily
+        current_time = datetime.now(pytz.UTC)
+        temp_sessions[f"{user_id}_{bin_id}"] = current_time
+        
+        return jsonify({
+            'message': 'Session started',
+            'user_id': user_id,
+            'bin_id': bin_id,
+            'start_time': current_time.isoformat()
+        }), 200
+        
+    except Exception as e:
+        logging.error(f"Error in qrcode endpoint: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/end_session', methods=['POST'])
 def end_session():
@@ -388,11 +414,7 @@ def personal_page():
         username=current_user.username
     )
 
-@app.route('/about')
-def about():
-    if request.method == 'POST':
-        log_message()
-    return render_template('about.html')
+
 
 
 @app.route('/leaderboard')
