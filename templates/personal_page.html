@@ -43,9 +43,12 @@
             {% include 'toolbar.html' %}
         </div>
         <div class="container">
+            <div class="user-icon">{{ current_user.username[0].upper() }}</div>
+            <span>{{ current_user.username }}</span>
             <form action="{{ url_for('logout') }}" method="post">
                 <button type="submit" class="logout-btn">Logout</button>
             </form>
+        </div>
     </main>
 </body>
 </html>
