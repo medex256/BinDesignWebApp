@@ -175,8 +175,8 @@ def manage_users():
 def manage_bins():
     if request.method == 'POST':
         log_message()
-    users = User.query.all()
-    return render_template('manage_bins.html', users=users, current_user=current_user)
+    bins = Bin.query.all()
+    return render_template('manage_bins.html', bins=bins)
 
 @app.route('/qrcode', methods=['POST'])
 @login_required 
