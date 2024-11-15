@@ -321,6 +321,7 @@ button:hover {
   border-radius: 4px;
   cursor: pointer;
   margin: 10px;
+  width:min-content;  
 }
 .plot-container {
   display: flex;
