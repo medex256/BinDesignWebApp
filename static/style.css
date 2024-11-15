@@ -3,15 +3,15 @@
     font-family: 'Open Sans';
     --text-primary: #b6b6b6;
     --text-secondary: #ececec;
-    --bg-primary: #23232e;
-    --bg-secondary: #141418;
+    --bg-primary: #1a1a19;
+    --bg-secondary: #2a2a2f;
     --transition-speed: 600ms;
     background-color: #2f2f2f;
   }
   
   body {
-    color: white;
-    background-color: rgb(6, 6, 6);
+    color: #f6fcdf;
+    background-color: #f6fcdf;
     margin: 0;
     padding: 0;
   }
@@ -20,7 +20,6 @@
     margin: 0;
     padding: 0;
     height: 100vh;
-    background-color: #f0f0f0;
   }
   
   body::-webkit-scrollbar {
@@ -28,21 +27,22 @@
   }
   
   body::-webkit-scrollbar-track {
-    background: #1e1e24;
+    background: #859f3d;
   }
   
   body::-webkit-scrollbar-thumb {
-    background: #6649b8;
+    background: #31511e;
   }
   
   main {
-    background-color: #2f2f2f;
-    margin-left: 5rem;
-    padding: 1rem;
+    padding-left: 5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
   }
   h1 {
     text-align: center;
-    margin-top: 0;
   }
 
   p {
@@ -50,13 +50,13 @@
   }
 
   .container {
-    color: whitesmoke;
     background-color: rgb(24, 24, 24);
-    padding: 30px;
+    padding: 1rem;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     max-width: 600px;
     width: 90%;
+    margin: .5rem;
   }
 
   .navbar {
@@ -66,7 +66,9 @@
     position: fixed;
     background-color: var(--bg-primary);
     transition: width 600ms ease;
-    overflow: scroll;
+    overflow: hidden;
+    z-index: 1000;
+    margin-left:0;
   }
   
   .navbar-nav {
@@ -95,7 +97,6 @@
   
   .nav-link:hover {
     filter: grayscale(0%) opacity(1);
-    background: var(--bg-secondary);
     color: var(--text-secondary);
   }
   
@@ -111,11 +112,11 @@
   }
   
   .fa-primary {
-    color: #28a745;
+    color: #859f3d;
   }
   
   .fa-secondary {
-    color: #007bff;
+    color: #859f3d;
   }
   
   .fa-primary,
@@ -128,7 +129,7 @@
     text-transform: uppercase;
     margin-bottom: 1rem;
     text-align: center;
-    color: var(--text-secondary);
+    color: #f6fcdf;
     background: var(--bg-secondary);
     font-size: 1.5rem;
     letter-spacing: 0.3ch;
@@ -158,6 +159,7 @@
       bottom: 0;
       width: 100vw;
       height: 5rem;
+      position: fixed;
     }
   
     .logo {
@@ -170,11 +172,18 @@
   
     .nav-link {
       justify-content: center;
+      color: #859f3d
     }
-  
+    .container {
+      width: 90%;
+    }
     main {
-      margin: 0;
+      padding-left: 0;
+      padding-bottom: 10rem;
+
     }
+    
+
   }
   
   /* Large screens */
@@ -186,7 +195,7 @@
     }
   
     .navbar:hover {
-      width: 16rem;
+      width: 14rem;
     }
   
     .navbar:hover .link-text {
@@ -221,14 +230,14 @@ input {
 button {
     width: 100%;
     padding: 0.75rem;
-    background-color: #1877f2;
+    background-color: #859f3d;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
 }
 button:hover {
-    background-color: #166fe5;
+    background-color: #315118;
 }
 .messages {
     margin-bottom: 1rem;
@@ -237,7 +246,7 @@ button:hover {
     color: #dc3545;
 }
 .success {
-    color: #28a745;
+    color: #859f3d;
 }
 .register-link {
     text-align: center;
@@ -245,7 +254,7 @@ button:hover {
 }
 /* from personal_page.html */
 .toolbar {
-  background-color: #333;
+  background-color: #ff0000;
   padding: 1rem;
   margin-bottom: 20px;
 }
@@ -285,13 +294,13 @@ button:hover {
   margin-right: 10px;
 }
 .logout-btn {
-  background-color: #f44336;
-  color: white;
+  background-color: #c21b1b;
+  color: #f6fcdf;
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
-  margin-left: 10px;
+  margin: 10px;
 }
 .plot-container {
   display: flex;
@@ -303,14 +312,18 @@ table {
   margin: 10px auto;
   border-collapse: collapse;
 }
-th, td {
-  border: 1px solid #ddd;
+th, td { /* table data */
+  border-bottom: 1px solid #ddd;
   padding: 8px;
   text-align: center;
   width: 33.33%;
 }
-th {
-  background-color: #f2f2f2;
+tr:hover {
+  background-color: rgb(0, 0, 0);
+}
+
+th {  /* table header */
+  background-color: #1a1a19;
 }
 .dark {
   --text-primary: #b6b6b6;
