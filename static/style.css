@@ -1,8 +1,8 @@
 :root {
     font-size: 1rem;
     font-family: 'Open Sans';
-    --text-primary: #b6b6b6;
-    --text-secondary: #ececec;
+    --text-primary: #d6dcaf;
+    --text-secondary: #f6fcdf;
     --bg-primary: #1a1a19;
     --bg-secondary: #2a2a2f;
     --transition-speed: 600ms;
@@ -11,7 +11,7 @@
   
   body {
     color: #f6fcdf;
-    background-color: whitesmoke;
+    background-color: #f6fcdf;
     margin: 0;
     padding: 0;
   }
