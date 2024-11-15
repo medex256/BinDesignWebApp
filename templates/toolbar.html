@@ -5,7 +5,7 @@
         <ul>
             <li><a href="{{url_for('manage_users')}}">Manage Users</a></li>
             <li><a href="{{url_for('manage_bins')}}">Manage Bins</a></li>
-
+            
         {% if current_user.is_authenticated %}
         <div class="user-section">
             <div class="user-icon">{{ current_user.username[0].upper() }}</div>
@@ -17,3 +17,6 @@
     {% endif %}
     </nav>
 </header>
+
+<!-- <div class="user-icon">{{ current_user.username[0].upper() }}</div> 
+ i like this i keep here for now--?>
