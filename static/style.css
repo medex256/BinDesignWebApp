@@ -275,9 +275,7 @@ button:hover {
 }
 /* from personal_page.html */
 .toolbar {
-  background-color: #ff0000;
-  padding: 1rem;
-  margin-bottom: 20px;
+  background-color: #1a1a19;
 }
 .toolbar ul {
   list-style-type: none;
@@ -290,7 +288,7 @@ button:hover {
   margin-right: 20px;
 }
 .toolbar a {
-  color: white;
+  color: #f6fcdf;
   text-decoration: none;
   padding: 8px 16px;
 }
