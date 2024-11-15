@@ -1,9 +1,12 @@
-<!-- this file is to store to header of each html-->
+<!-- This is a admin toolbar-->
 
 <header>
     <nav class="toolbar">
         <ul>
-            <li><a href="{{url_for('home')}}">Home</a></li>
+            <li><a href="{{url_for('manage_users')}}">Manage Users</a></li>
+            <li><a href="{{url_for('manage_bins')}}">Manage Bins</a></li>
+
+            
         {% if not current_user.is_authenticated %}
             <li><a href="{{url_for('login')}}">Login</a></li>
             <li><a href="{{url_for('register')}}">Register</a></li>
