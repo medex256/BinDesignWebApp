@@ -171,29 +171,19 @@ def manage_users():
     return render_template('manage_users.html', users=users, current_user=current_user)
 
 @app.route('/qrcode', methods=['POST'])
+@login_required 
 def qrcode():
     try:
         # Get bin_id directly from request data
         bin_id = request.get_data(as_text=True)
         
-        # Get client IP address
-        client_ip = request.remote_addr
-        
-        # Log the request for debugging
-        logging.info(f"Received request from IP: {client_ip} for bin_id: {bin_id}")
-        
-        # Validate bin_id is a valid integer
+         #Validate bin_id is a valid integer
         try:
             bin_id = int(bin_id)
         except ValueError:
             return jsonify({'error': 'Invalid bin_id format. Must be an integer'}), 400
             
-        # For now, use a test user (modify this according to your needs)
-        user = User.query.first()  # Or however you want to identify the user
-        if not user:
-            return jsonify({'error': 'No user found'}), 404
-            
-        user_id = user.id
+        user_id = current_user.id 
         
         # Verify bin exists
         bin_exists = Bin.query.get(bin_id)
@@ -204,12 +194,12 @@ def qrcode():
         current_time = datetime.now(pytz.UTC)
         temp_sessions[f"{user_id}_{bin_id}"] = current_time
         
-        return jsonify({
-            'message': 'Session started',
-            'user_id': user_id,
-            'bin_id': bin_id,
-            'start_time': current_time.isoformat()
-        }), 200
+        #return jsonify({
+            #'message': 'Session started',
+            #'user_id': user_id,
+            #'bin_id': bin_id,
+            #'start_time': current_time.isoformat()
+        #}), 200
         
     except Exception as e:
         logging.error(f"Error in qrcode endpoint: {str(e)}")
