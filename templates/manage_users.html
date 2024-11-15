@@ -3,26 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet"/>
     <title>User Information</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
         .user-table {
             width: 100%;
             border-collapse: collapse;
@@ -61,38 +45,34 @@
     </style>
 </head>
 <body>
-    {% include 'toolbar.html' %}
-    <div class="container">
-        <h1>User Management</h1>
-        
-        
+    {% include 'navbar.html' %}
+    <main>
+        <div class="fulllength">
+            <h1>User Management</h1>
+        </div>
+        {% include 'toolbar.html' %}
+        <div class="container">
+            <table class="user-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.userlv }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-        <table class="user-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    
-                    <th>Role</th>
-                    
-                    
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr>
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.username }}</td>
-                    
-                    <td>{{ user.userlv }}</td>
-                    
-                    
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    
+    </main>
 </body>
+
 </html>
