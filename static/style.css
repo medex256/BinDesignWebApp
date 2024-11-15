@@ -42,8 +42,21 @@
     flex-direction: column;
   }
   h1 {
+    font-size: 3rem;
     text-align: center;
   }
+  .fulllength {
+    font-size: 3rem;
+    text-align: center;
+    background-color: #1a1a19;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width:100%;
+  }
+  h2 {
+    font-size: 1rem;
+    text-align: center;
+  }
+
 
   p {
     line-height: 1.5;
