@@ -10,8 +10,8 @@
   }
   
   body {
-    color: #d6dcaf;
-    background-color: #f6fcdf;
+    color: #d1d3c8;
+    background-color: #d1d3c8;
     margin: 0;
     padding: 0;
   }
@@ -51,12 +51,18 @@
     background-color: #1a1a19;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width:100%;
+    background: url('recycle-background.jpg') ;
+    background-size: cover;
+
   }
   h2 {
     font-size: 1rem;
     text-align: center;
   }
-
+  h3 {
+    font-size: 1.5rem;
+    padding-left: 2rem;
+  }
 
   p {
     line-height: 1.5;
