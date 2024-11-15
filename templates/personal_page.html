@@ -34,6 +34,10 @@
                 </tr>
             </table>
         </div>
+        <div class="container">
+            <form action="{{ url_for('logout') }}" method="post">
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
     </main>
 </body>
 </html>
