@@ -1,25 +1,40 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet" />
-    <title>Home</title>
-    <script src="{{ url_for('serve_js') }}"></script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet">
+    <title>Manage Bins</title>
 </head>
-
 <body class="body-home">
-  {% include 'navbar.html' %}
+    {% include 'navbar.html' %}
     <main>
         <div class="fulllength">
             <h1>Manage Bins</h1>
-          </div>
-        <div class="container">
-            <h1>Welcome to our Website</h1>
-            <p>This is the website about our recycle system.</p>
-            <p>Feel free to explore the website and learn more about our services and offerings.</p>
         </div>
-        
+        <div class="container">
+            <table class="bin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Bin Type</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bin in bins %}
+                    <tr>
+                        <td>{{ bin.bin_id }}</td>
+                        <td>{{ bin.bin_type }}</td>
+                        <td>{{ bin.bin_location }}</td>
+                        <td>{{ 'Full' if bin.bin_full else 'Available' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </main>
 </body>
 </html>
