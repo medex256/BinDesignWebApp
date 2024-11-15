@@ -10,46 +10,52 @@
 <body class="body-home">
   {% include 'navbar.html' %}
   <main>
-    <!-- Main Leaderboard -->
-    <div class="table-responsive">
-      <table class="table table-hover mb-0">
-          <thead class="table-dark">
-              <tr>
-                  <th>Rank</th>
-                  <th>Username</th>
-                  <th class="text-end">Trash Count</th>
-              </tr>
-          </thead>
-          <tbody>
-              {% for entry in leaderboard %}
-              <tr>
-                  <td>{{ entry.rank }}.</td>
-                  <td>{{ entry.username }}</td>
-                  <td class="text-end">{{ entry.trash_count }}</td>
-              </tr>
-              {% endfor %}
-          </tbody>
-      </table>
-  </div>
+    
+    <div class="fulllength"> 
+        <h1>Leaderboards</h1>
+        <h2>See how you stack up against other users!</h2>
+    </div>
+    <div class="container">
+        <table class="table-borderless">
+            <thead class="table-dark">
+                <tr>
+                    <th>Rank</th>
+                    <th>Username</th>
+                    <th class="text-end">Trash Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ current_user_rank.rank }}.</td>
+                    <td>{{ current_user_rank.username }}</td>
+                    <td class="text-end">{{ current_user_rank.trash_count }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="container">
+        <h2>Global Rankings</h2>
+        <table class="table-borderless">
+            <thead class="table-dark">
+                <tr>
+                    <th>Rank</th>
+                    <th>Username</th>
+                    <th class="text-end">Trash Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in leaderboard %}
+                <tr>
+                    <td>{{ entry.rank }}.</td>
+                    <td>{{ entry.username }}</td>
+                    <td class="text-end">{{ entry.trash_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-  <!-- Current User Stats -->
-  <div class="card my-4">
-      <div class="card-body">
-          <h5 class="card-title mb-3">Your Position</h5>
-          <table class="table table-borderless mb-0">
-              <tbody>
-                  <tr>
-                      <td>{{ current_user_rank.rank }}.</td>
-                      <td>{{ current_user_rank.username }}</td>
-                      <td class="text-end">{{ current_user_rank.trash_count }}</td>
-                  </tr>
-              </tbody>
-          </table>
-      </div>
-  </div>
-</div>
-
-  
+ 
   </main>
 </body>
 </html>
