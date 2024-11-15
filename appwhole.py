@@ -202,12 +202,12 @@ def qrcode():
         current_time = datetime.now(pytz.UTC)
         temp_sessions[f"{user_id}_{bin_id}"] = current_time
         
-        #return jsonify({
-            #'message': 'Session started',
-            #'user_id': user_id,
-            #'bin_id': bin_id,
-            #'start_time': current_time.isoformat()
-        #}), 200
+        return jsonify({
+            'message': 'Session started',
+            'user_id': user_id,
+            'bin_id': bin_id,
+            'start_time': current_time.isoformat()
+        }), 200
         
     except Exception as e:
         logging.error(f"Error in qrcode endpoint: {str(e)}")
