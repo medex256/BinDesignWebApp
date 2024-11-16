@@ -6,56 +6,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet"/>
     <title>Register</title>
-    <style>
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-        input {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: #42b72a;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #36a420;
-        }
-        .messages {
-            margin-bottom: 1rem;
-        }
-        .login-link {
-            text-align: center;
-            margin-top: 1rem;
-        }
-        .toolbar {
-            background-color: #333;
-            color: white;
-            padding: 10px;
-            overflow-x: auto;
-        }
-
-        .toolbar ul {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-wrap: nowrap;
-            justify-content: flex-start;
-        }
-    </style>
 </head>
 <body>
     {% include 'navbar.html' %}
