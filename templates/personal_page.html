@@ -44,20 +44,20 @@
             <div class="user-icon">{{ current_user.username[0].upper() }}</div>
             <span>{{ current_user.username }}</span>
             <form action="{{ url_for('logout') }}" method="post" style="margin-left: auto;">
-            <button type="submit" class="logout-btn">Logout</button>
+                <button type="submit" class="logout-btn">Logout</button>
             </form>
         </div>
         
         <!-- This is a admin toolbar-->
         {% if current_user.is_authenticated %}
-        <div class="container">
-            <nav class="toolbar">
-            <ul>
-                <li style="float: left;"><h2>Admin Panel</h2></li>
-                <li style="float: right;"><button onclick="location.href='{{ url_for('manage_users') }}';">Manage Users</button></li>
-                <li style="float: right;"><button onclick="location.href='{{ url_for('manage_bins') }}';">Manage Bins</button></li>
-            </ul>
-            </nav>
+        <div class="selector">
+            <span>Admin Toolbar</span>
+                <form action="{{ url_for('manage_users') }}" style=" margin-left:auto; float: right;">
+                    <button type="submit">Manage Users</button>
+                </form>
+                <form action="{{ url_for('manage_bins') }}" style=" margin:1rem; float: right;">
+                    <button type="submit">Manage Bins</button>
+                </form>
         </div>
         {% endif %}
     </main>
