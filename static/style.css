@@ -77,7 +77,7 @@
     width: 90%;
     margin: .5rem;
   }
-
+  /* from navbar.html */
   .navbar {
     display: flex;
     justify-content: center;
@@ -150,7 +150,6 @@
     text-transform: uppercase;
     margin-bottom: 1rem;
     text-align: center;
-    color: #f6fcdf;
     background: var(--bg-secondary);
     font-size: 1.5rem;
     letter-spacing: 0.3ch;
@@ -244,7 +243,6 @@ label {
 input {
     width: 100%;
     padding: 0.5rem;
-    border: 1px solid #ddd;
     border-radius: 4px;
     box-sizing: border-box;
 }
@@ -252,7 +250,6 @@ button {
     width: 100%;
     padding: 0.75rem;
     background-color: #859f3d;
-    color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -273,6 +270,40 @@ button:hover {
     text-align: center;
     margin-top: 1rem;
 }
+
+.form-group {
+  margin-bottom: 1rem;
+}
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #dddddd6c;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #859f3d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #36a420;
+}
+.messages {
+  margin-bottom: 1rem;
+}
+.login-link {
+  text-align: center;
+  margin-top: 1rem;
+}
 /* from personal_page.html */
 .toolbar {
   background-color: #1a1a19;
@@ -285,7 +316,9 @@ button:hover {
   align-items: center;
 }
 .toolbar li {
-  margin-right: 20px;
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+
 }
 .toolbar a {
   color: #f6fcdf;
@@ -312,6 +345,18 @@ button:hover {
   justify-content: center;
   margin-right: 10px;
 }
+.selector {
+  display: flex;
+  align-items: center;
+  color: white;
+  background-color: rgb(24, 24, 24);
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 90%;
+  margin: .5rem;
+}
 .logout-btn {
   background-color: #c21b1b;
   color: #f6fcdf;
@@ -326,6 +371,7 @@ button:hover {
   display: flex;
   justify-content: center;
   overflow-x: auto;
+  width: 100%;
 }
 table {
   width: 90%;
