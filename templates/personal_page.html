@@ -39,16 +39,26 @@
                 </tr>
             </table>
         </div>
-        <div class="container">
-            {% include 'toolbar.html' %}
-        </div>
-        <div class="container">
+        
+        <div class="selector">
             <div class="user-icon">{{ current_user.username[0].upper() }}</div>
             <span>{{ current_user.username }}</span>
             <form action="{{ url_for('logout') }}" method="post">
                 <button type="submit" class="logout-btn">Logout</button>
             </form>
         </div>
+        
+        <!-- This is a admin toolbar-->
+        {% if current_user.is_authenticated %}
+        <div class="container">
+            <h3>Admin Panel</h3>
+            <nav class="toolbar">
+                <ul>
+                    <li><a href="{{url_for('manage_users')}}">Manage Users</a></li>
+                    <li><a href="{{url_for('manage_bins')}}">Manage Bins</a></li>
+            </nav>
+        </div>
+        {% endif %}
     </main>
 </body>
 </html>
