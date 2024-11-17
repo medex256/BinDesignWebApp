@@ -365,12 +365,10 @@ def personal_page():
     # Format the dates for the heatmap
     data = []
     for session in user_sessions:
-        # Convert to string format YYYY-MM-DD
-        date_str = session.session_date.strftime('%Y-%m-%d')
-        data.append(date_str)
+        data.append(session.session_date)
 
     plot_html = pyo.plot(
-        figure_or_data = heatmap(data=data, weeks=32),
+        figure_or_data = heatmap(data=data, weeks=25, width=600,height=200),
         output_type = 'div',
         config = {
             "displaylogo": False,
