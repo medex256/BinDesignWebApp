@@ -40,25 +40,28 @@
                 </tr>
             </table>
         </div>
-        
-        <div class="selector">
-            <div class="user-icon">{{ current_user.username[0].upper() }}</div>
-            <span>{{ current_user.username }}</span>
-            <form action="{{ url_for('logout') }}" method="post" style="margin-left: auto;">
-                <button type="submit" class="logout-btn">Logout</button>
-            </form>
+        <div class="container">
+            <div class="selector">
+                <div class="user-icon">{{ current_user.username[0].upper() }}</div>
+                <span>{{ current_user.username }}</span>
+                <form action="{{ url_for('logout') }}" method="post" style="margin-left: auto;">
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </div>
         </div>
         
         <!-- This is a admin toolbar-->
         {% if current_user.is_authenticated %}
-        <div class="selector">
-            <span>Admin Toolbar</span>
+        <div class="container">
+            <div class="selector">
+                <span>Admin Toolbar</span>
                 <form action="{{ url_for('manage_users') }}" style=" margin-left:auto; float: right;">
                     <button type="submit">Manage Users</button>
                 </form>
                 <form action="{{ url_for('manage_bins') }}" style=" margin-left:1rem; float: right;">
                     <button type="submit">Manage Bins</button>
                 </form>
+            </div>
         </div>
         {% endif %}
     </main>
