@@ -4,38 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet"/>
-    <title>User Information</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet">
+    <title>Manage Bins</title>
 </head>
-<body>
+<body class="body-home">
     {% include 'navbar.html' %}
     <main>
         <div class="fulllength">
-            <h1>User Management</h1>
+            <h1>Bin Management</h1>
         </div>
-
         <div class="container">
-            <table>
+            <table class="bin-table">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Username</th>
-                        <th>Role</th>
+                        <th>Bin Type</th>
+                        <th>Location</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for user in users %}
+                    {% for bin in bins %}
                     <tr>
-                        <td>{{ user.id }}</td>
-                        <td>{{ user.username }}</td>
-                        <td>{{ user.userlv }}</td>
+                        <td>{{ bin.bin_id }}</td>
+                        <td>{{ bin.bin_type }}</td>
+                        <td>{{ bin.bin_location }}</td>
+                        <td>{{ 'Full' if bin.bin_full else 'Available' }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-
     </main>
 </body>
-
 </html>

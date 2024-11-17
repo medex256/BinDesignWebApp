@@ -3,117 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet"/>
     <title>Register</title>
-    <style>
-        .container {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-        input {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: #42b72a;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #36a420;
-        }
-        .messages {
-            margin-bottom: 1rem;
-        }
-        .error {
-            color: #dc3545;
-        }
-        .success {
-            color: #28a745;
-        }
-        .login-link {
-            text-align: center;
-            margin-top: 1rem;
-        }
-        .toolbar {
-            background-color: #333;
-            color: white;
-            padding: 10px;
-            overflow-x: auto;
-        }
-
-        .toolbar ul {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-wrap: nowrap;
-            justify-content: flex-start;
-        }
-
-        .toolbar li {
-            margin: 0 10px;
-            white-space: nowrap;
-        }
-
-        .toolbar a {
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .toolbar a:hover {
-            color: #ccc;
-        }
-    </style>
 </head>
 <body>
-    {% include 'toolbar.html' %}
-    <div class="container">
-        <h2 class="text-center">Register</h2>
-        <form method="POST" action="">
-            {{ form.hidden_tag() }}
-            <div class="form-group">
-                {{ form.username.label }}
-                {{ form.username(value="user") }}
-                {% if form.username.errors %}
-                    
-                    {% for error in form.username.errors %}
-                        {{ error }}
-                    {% endfor %}
-                    
-                {% endif %}
-            </div>      
-            <div class="form-group">
-                {{ form.user_password.label }}
-                {{ form.user_password }}
-            </div>
-            <div class="form-group">
-                {{ form.confirm_password.label }}
-                {{ form.confirm_password }}
-            </div>
-            {{ form.submit }}
-        </form>
-        <div class="text-center">
-            <a href="{{ url_for('login') }}">Already have an account? Sign in here</a>
+    {% include 'navbar.html' %}
+    <main>
+        <div class="fulllength">
+            <h1>Register NOW!</h1>
+            <h2>Welcome to the The SingProJet!</h2>
         </div>
-    </div>
+        <div class="container">    
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.username.label }}
+                    {{ form.username(value="user") }}
+                    {% if form.username.errors %}
+                        
+                        {% for error in form.username.errors %}
+                            {{ error }}
+                        {% endfor %}
+                        
+                    {% endif %}
+                </div>      
+                <div class="form-group">
+                    {{ form.user_password.label }}
+                    {{ form.user_password }}
+                </div>
+                <div class="form-group">
+                    {{ form.confirm_password.label }}
+                    {{ form.confirm_password }}
+                </div>
+                {{ form.submit }}
+            </form>
+            <div class="container">
+                <a href="{{ url_for('login') }}">Already have an account? Sign in here</a>
+            </div>
+        </div>
+    </main>
 </body>
 </html>

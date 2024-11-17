@@ -5,20 +5,37 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet" />
     <title>Home</title>
-    
 </head>
 
 <body class="body-home">
   {% include 'navbar.html' %}
     <main>
-        <div class="fulllength">
-            <h1>Welcome home, {{current_user.username}}!</h1>
-          </div>
-        <div class="container">
-            <p>This is the website about our recycle system.</p>
-            <p>Feel free to explore the website and learn more about our services and offerings.</p>
-        </div>
-        
+      <div class="fulllength">
+        <h1>Welcome to The SingProJet</h1>
+      </div>
+      {% if not current_user.is_authenticated %}
+      <div class="container">
+        <p>Dear whomever it may concern,</p>
+        <p>It may be a good idea to login with your account.</p>
+        <p>Sincerely,</p>
+        <p>Bob Loblaw</p>
+      </div>     
+      {% endif %}
+      {% if current_user.is_authenticated %}
+      <div class="container">
+        <p>Dear {{ current_user.username }},</p>
+        <p>Welcome back.</p>
+        <p>Yo, listen up! If you’re not recycling, what are you even doing? 🌎🗑️ Skibidi toilet moments are not the vibe. It's 2024, and we need to keep this planet from turning into a post-apocalyptic wasteland. 🏙️💀 Toss that bottle in the right bin—it's easier than getting that mango out of the fridge. Those who know, know that recycling is the rizz we need. You’re not some NPC, so don’t be still water; make moves and get your act together. Facts ♻️✨
+
+          Channel your inner rizz and be a hero for the environment. 🌟✨ Let's yeet that trash where it belongs and keep this planet lit. 🚀🌱 No cap, Earth gang.
+          
+          So, stop playing and start recycling. For the vibes. ✨🌍 Main character energy 💯🚀
+          
+          Let's make this world a better place, fam. You got this! 🌍💪✨</p>
+        <p>Sincerely,</p>
+        <p>Bob Loblaw</p>
+      </div>
+      {% endif %}
     </main>
 </body>
 </html>

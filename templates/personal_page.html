@@ -10,12 +10,18 @@
 <body>
     {% include 'navbar.html' %}
     <main>
+        <div class="fulllength">
+            <h1>{{ current_user.username }}'s Personal Page</h1>
+            <h2>Let's see what you be up to deez days</h2>
+        </div>
         <div class="container">
-            <h1>Recycling Chart</h1>
-            {% include 'toolbar.html' %}
+            <h3>Recycling Heatmap</h3>
             <div class="plot-container">
                 {{ plot|safe }}
             </div>
+        </div>
+        <div class="container">
+            <h3>Recycling Statistics</h3>
             <table>
                 <tr>
                     <th>Recycling in Last Month</th>
@@ -34,10 +40,27 @@
                 </tr>
             </table>
         </div>
-        <div class="container">
-            <form action="{{ url_for('logout') }}" method="post">
+        
+        <div class="selector">
+            <div class="user-icon">{{ current_user.username[0].upper() }}</div>
+            <span>{{ current_user.username }}</span>
+            <form action="{{ url_for('logout') }}" method="post" style="margin-left: auto;">
                 <button type="submit" class="logout-btn">Logout</button>
             </form>
+        </div>
+        
+        <!-- This is a admin toolbar-->
+        {% if current_user.is_authenticated %}
+        <div class="selector">
+            <span>Admin Toolbar</span>
+                <form action="{{ url_for('manage_users') }}" style=" margin-left:auto; float: right;">
+                    <button type="submit">Manage Users</button>
+                </form>
+                <form action="{{ url_for('manage_bins') }}" style=" margin-left:1rem; float: right;">
+                    <button type="submit">Manage Bins</button>
+                </form>
+        </div>
+        {% endif %}
     </main>
 </body>
 </html>

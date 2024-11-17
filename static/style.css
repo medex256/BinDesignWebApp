@@ -6,7 +6,6 @@
     --bg-primary: #1a1a19;
     --bg-secondary: #2a2a2f;
     --transition-speed: 600ms;
-    background-color: #2f2f2f;
   }
   
   body {
@@ -66,18 +65,30 @@
 
   p {
     line-height: 1.5;
+    padding-left: 1rem;
   }
 
   .container {
     background-color: rgb(24, 24, 24);
-    padding: 1rem;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     max-width: 600px;
     width: 90%;
     margin: .5rem;
+    padding: 1rem;
   }
-
+  .selector {
+    display: flex;
+    align-items: center;
+    background-color: rgb(24, 24, 24);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    width: 90%;
+    margin: 0.5rem;
+    padding: 1rem;
+  }
+  /* from navbar.html */
   .navbar {
     display: flex;
     justify-content: center;
@@ -118,7 +129,9 @@
     filter: grayscale(0%) opacity(1);
     color: var(--text-secondary);
   }
-  
+  a {
+    color: #859f3d
+  }
   .link-text {
     display: none;
     margin-left: 1rem;
@@ -148,7 +161,6 @@
     text-transform: uppercase;
     margin-bottom: 1rem;
     text-align: center;
-    color: #f6fcdf;
     background: var(--bg-secondary);
     font-size: 1.5rem;
     letter-spacing: 0.3ch;
@@ -198,7 +210,7 @@
     }
     main {
       padding-left: 0;
-      padding-bottom: 10rem;
+      padding-bottom: 5rem;
 
     }
     
@@ -242,7 +254,6 @@ label {
 input {
     width: 100%;
     padding: 0.5rem;
-    border: 1px solid #ddd;
     border-radius: 4px;
     box-sizing: border-box;
 }
@@ -250,7 +261,6 @@ button {
     width: 100%;
     padding: 0.75rem;
     background-color: #859f3d;
-    color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -271,11 +281,54 @@ button:hover {
     text-align: center;
     margin-top: 1rem;
 }
+
+.form-group {
+  margin-bottom: 1rem;
+}
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+input {
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.logout-btn {
+  width: 100%;
+  padding: 0.5rem;
+  margin: .5rem;
+  background-color: #c21b1b;
+  color: whitesmoke;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button {
+  width: 100%;
+  padding: 0.5rem;
+  margin: 0.5rem;
+  background-color: #859f3d;
+  color: whitesmoke;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #36a420;
+}
+.messages {
+  margin-bottom: 1rem;
+}
+.login-link {
+  text-align: center;
+  margin-top: 1rem;
+}
 /* from personal_page.html */
 .toolbar {
-  background-color: #ff0000;
-  padding: 1rem;
-  margin-bottom: 20px;
+  background-color: #1a1a19;
 }
 .toolbar ul {
   list-style-type: none;
@@ -285,10 +338,12 @@ button:hover {
   align-items: center;
 }
 .toolbar li {
-  margin-right: 20px;
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+
 }
 .toolbar a {
-  color: white;
+  color: #f6fcdf;
   text-decoration: none;
   padding: 8px 16px;
 }
@@ -312,19 +367,13 @@ button:hover {
   justify-content: center;
   margin-right: 10px;
 }
-.logout-btn {
-  background-color: #c21b1b;
-  color: #f6fcdf;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin: 10px;
-}
+
+
 .plot-container {
   display: flex;
   justify-content: center;
   overflow-x: auto;
+  width: 100%;
 }
 table {
   width: 90%;
@@ -333,9 +382,9 @@ table {
 }
 th, td { /* table data */
   border-bottom: 1px solid #ddd;
-  padding: 8px;
+  padding: 0.5rem;
   text-align: center;
-  width: 33.33%;
+  width: 5rem;
 }
 tr:hover {
   background-color: rgb(0, 0, 0);
