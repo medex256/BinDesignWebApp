@@ -66,10 +66,13 @@ def heatmap(data : list[datetime], weeks : int = 32, width = 800, height = 300) 
 
     z = np.zeros(7*weeks, dtype=int)
 
+    zmax = 1
+
     for item in data:
         date = datetime.strptime(item,date_format) if isinstance(item, str) else item
         if weekday - timedelta(days=7*weeks) <= date and date <= weekday:
             z[-(weekday-date).days] += 1
+            if z > zmax: zmax = z
     
     z = np.reshape(z,(-1 , 7)).transpose(1,0)
 
@@ -86,6 +89,9 @@ def heatmap(data : list[datetime], weeks : int = 32, width = 800, height = 300) 
         if len(yticktext) == 0 or yticktext[-1] != month:
             ytickvals.append(i)
             yticktext.append(month)
+    
+    transparent = 'rgba(255,255,255,0)'
+    white = 'rgba(250,250,250,1)'
 
     fig = go.Figure(
 
@@ -93,8 +99,10 @@ def heatmap(data : list[datetime], weeks : int = 32, width = 800, height = 300) 
             z = z,
             xgap = 2,
             ygap = 2,
+            zmin = 0,
+            zmax = zmax,
             showscale = False,
-            colorscale = [[0, 'rgba(22,34,27,0.1)'], [1, 'rgba(57,211,83,1)']],
+            colorscale = [[0, 'rgba(32,44,37,1)'], [1, 'rgba(57,211,83,1)']],
             hoverinfo = 'text',
             hovertext = hovertext,
             # hovertemplate = '%{z} rubbish on %{x}<extra></extra>',
@@ -105,7 +113,9 @@ def heatmap(data : list[datetime], weeks : int = 32, width = 800, height = 300) 
             autosize = False,
             width=width,
             height=height,
-            plot_bgcolor = 'rgba(0,0,0,0)',
+            plot_bgcolor = transparent,
+            paper_bgcolor = transparent,
+            
             yaxis_scaleanchor="x",
             xaxis = dict(
                 side = "bottom",
@@ -114,6 +124,10 @@ def heatmap(data : list[datetime], weeks : int = 32, width = 800, height = 300) 
                 tickvals = ytickvals,
                 ticktext = yticktext,
                 tickangle = 0,
+                gridcolor = transparent,
+                zerolinecolor = transparent,
+                color = white,
+
             ),
             yaxis = dict(
                 scaleanchor="x", constrain="domain",
@@ -121,6 +135,9 @@ def heatmap(data : list[datetime], weeks : int = 32, width = 800, height = 300) 
                 fixedrange = True,
                 tickvals = [1,3,5],
                 ticktext = ['Mon','Wed','Fri'],
+                gridcolor = transparent,
+                zerolinecolor = transparent,
+                color = white,
             ),
         ),
     )
