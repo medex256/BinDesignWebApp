@@ -293,14 +293,15 @@ input {
 button {
   width: 100%;
   padding: 0.75rem;
-  background-color: #d1d3c8;
-  color: #1a1a19;
+  background-color: #373734;
+  color: #d1d3c8;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: var(--transition-speed);
 }
 button:hover {
-  background-color: #343430;
+  background-color: #859f3d;
   color: #d1d3c8;
 }
 .messages {
