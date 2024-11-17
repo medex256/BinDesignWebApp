@@ -80,13 +80,7 @@
   .selector {
     display: flex;
     align-items: center;
-    background-color: rgb(24, 24, 24);
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-    width: 90%;
     margin: 0.5rem;
-    padding: 1rem;
   }
   /* from navbar.html */
   .navbar {
@@ -257,17 +251,7 @@ input {
     border-radius: 4px;
     box-sizing: border-box;
 }
-button {
-    width: 100%;
-    padding: 0.75rem;
-    background-color: #859f3d;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-button:hover {
-    background-color: #315118;
-}
+
 .messages {
     margin-bottom: 1rem;
 }
@@ -308,16 +292,16 @@ input {
 }
 button {
   width: 100%;
-  padding: 0.5rem;
-  margin: 0.5rem;
-  background-color: #859f3d;
-  color: whitesmoke;
+  padding: 0.75rem;
+  background-color: #d1d3c8;
+  color: #1a1a19;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 button:hover {
-  background-color: #36a420;
+  background-color: #343430;
+  color: #d1d3c8;
 }
 .messages {
   margin-bottom: 1rem;
@@ -327,30 +311,6 @@ button:hover {
   margin-top: 1rem;
 }
 /* from personal_page.html */
-.toolbar {
-  background-color: #1a1a19;
-}
-.toolbar ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  align-items: center;
-}
-.toolbar li {
-  margin-right: 0.5rem;
-  margin-left: 0.5rem;
-
-}
-.toolbar a {
-  color: #f6fcdf;
-  text-decoration: none;
-  padding: 8px 16px;
-}
-.toolbar a:hover {
-  background-color: #555;
-  border-radius: 4px;
-}
 .user-section {
   display: flex;
   align-items: center;
