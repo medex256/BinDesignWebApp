@@ -368,7 +368,8 @@ def personal_page():
     # Format the dates for the heatmap
     data = []
     for session in user_sessions:
-        data.append(session.session_date)
+        date_str = session.session_date.strftime('%Y-%m-%d')
+        data.append(date_str)
 
     plot_html = pyo.plot(
         figure_or_data = heatmap(data=data, weeks=25, width=600,height=200),
