@@ -352,8 +352,14 @@ button:hover {
   display: flex;
   justify-content: center;
   overflow-x: auto;
-  width: 100%;
+  max-width: 100%;
 }
+.plot-container div{
+  flex: auto;
+  max-width: 100%;
+}
+
+
 table {
   width: 90%;
   margin: 10px auto;
