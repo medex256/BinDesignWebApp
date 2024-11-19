@@ -38,7 +38,7 @@ def load_user(user_id):
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated or current_user.userlv != 1:
+        if not current_user.is_authenticated or current_user.userlv != 'Admin':
             abort(403)  # Forbidden
         return f(*args, **kwargs)
     return decorated_function
@@ -50,7 +50,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(80), unique=True, nullable=False)
     user_password = db.Column(db.String(100), nullable=False)
     session_count = db.Column(db.Integer, default=0)
-    userlv = db.Column(db.Integer, default=0)
+    userlv = db.Column(db.String(80), nullable=False, default='User')
     sessions = db.relationship('Session', backref='user', lazy='dynamic')
     leaderboard_entry = db.relationship('Leaderboard', backref='user', uselist=False)
 
@@ -183,7 +183,7 @@ def logout():
 
 @app.route('/manage_users')
 @login_required
-@admin_required
+#@admin_required
 def manage_users():
     if request.method == 'POST':
         log_message()
@@ -192,15 +192,15 @@ def manage_users():
 
 @app.route('/update_user_role/<int:user_id>', methods=['POST'])
 @login_required
-@admin_required
+#@admin_required
 def update_user_role(user_id):
     user = User.query.get_or_404(user_id)
     new_role = request.form.get('role')
-    if new_role == 'user':
-        user.userlv = 0
+    if new_role == 'User':
+        user.userlv = new_role
         db.session.commit()
-    elif new_role == 'admin':
-        user.userlv = 1
+    elif new_role == 'Admin':
+        user.userlv = new_role
         db.session.commit()
     return redirect(url_for('manage_users'))
 
@@ -303,7 +303,7 @@ def end_session():
 
 @app.route('/manage_bins')
 @login_required
-@admin_required
+#@admin_required
 def manage_bins():
     if request.method == 'POST':
         log_message()
