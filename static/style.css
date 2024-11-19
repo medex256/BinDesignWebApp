@@ -14,7 +14,7 @@
   
   body {
     color: var(--text-primary);
-    background-color: var(--bg-primary);
+    background-color: var(--text-primary);
     margin: 0;
     padding: 0;
   }
@@ -150,16 +150,9 @@
     margin: 0 1.5rem;
   }
   
-  .fa-primary {
-    color: var(--symbol);
-  }
-  
-  .fa-secondary {
-    color: var(--symbol);
-  }
-  
   .fa-primary,
   .fa-secondary {
+    color: var(--symbol);
     transition: var(--transition-speed);
   }
   
@@ -292,27 +285,36 @@ input {
   border: none;
   border-radius: 4px;
   box-sizing: border-box;
+  background-color: var(--bg-primary);
 }
+
+/* buttons */
 button {
   width: 100%;
   padding: 0.75rem;
-  background-color: #373734;
-  color: #d1d3c8;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: var(--transition-speed);
+  font-weight: bold;
+
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: normal;
+  text-transform: uppercase;
+  transition: all 0.2s ease-in-out
 }
 button:hover {
-  background-color: #f6fcdf;
-  color: #1a1a19;
+  color: var(--text-glow);
 }
 
 .logout-btn {
   width: 100%;
   padding: 0.5rem;
   margin: .5rem;
-  background-color: #c21b1b;
+  background-color: #951717;
   cursor: pointer;
 }
 .messages {
