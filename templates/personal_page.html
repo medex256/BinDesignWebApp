@@ -20,7 +20,7 @@
                 {{ plot|safe }}
             </div>
         </div>
-        <div class="divider">
+        <div class="container">
             <h3>Recycling Statistics</h3>
             <table>
                 <tr>
@@ -45,7 +45,7 @@
                 <div class="user-icon">{{ current_user.username[0].upper() }}</div>
                 <span>{{ current_user.username }}</span>
                 <form action="{{ url_for('logout') }}" method="post" style="margin-left: auto;">
-                    <button type="submit" class="logout-btn">Logout</button>
+                    <button type="submit" style=" background-color: #c21b1b;">Logout</button>
                 </form>
             </div>
         </div>

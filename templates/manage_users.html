@@ -20,7 +20,8 @@
                     <tr>
                         <th>ID</th>
                         <th>Username</th>
-                        <th>Role</th>
+                        <th>Admin</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -28,14 +29,16 @@
                     <tr>
                         <td>{{ user.id }}</td>
                         <td>{{ user.username }}</td>
-                        <form method="POST" action="{{ url_for('update_user_role', user_id=user.id) }}">
-                            <select name="role">
-                                <option value="user" {% if user.userlv == 0 %}selected{% endif %}>User</option>
-                                <option value="admin" {% if user.role == 1 %}selected{% endif %}>Admin</option>
-                            </select>
-                            <input type="submit" value="Update Role">
-                        </form>
                         <td>{{ user.userlv }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('update_user_role', user_id=user.id) }}">
+                                <select name="role">
+                                    <option value="user" {% if user.userlv == 0 %}selected{% endif %}>User</option>
+                                    <option value="admin" {% if user.role == 1 %}selected{% endif %}>Admin</option>
+                                </select>
+                                <button type="submit" style="margin-top: 0.5rem;">Update Role</button>
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
