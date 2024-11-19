@@ -10,7 +10,7 @@
 <body>
     {% include 'navbar.html' %}
     <main>
-        <div class="fulllength">
+        <div class="banner">
             <h1>{{ current_user.username }}'s Personal Page</h1>
             <h2>Let's see what you be up to deez days</h2>
         </div>
@@ -20,7 +20,7 @@
                 {{ plot|safe }}
             </div>
         </div>
-        <div class="container">
+        <div class="divider">
             <h3>Recycling Statistics</h3>
             <table>
                 <tr>

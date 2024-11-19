@@ -44,7 +44,7 @@
     font-size: 3rem;
     text-align: center;
   }
-  .fulllength {
+  .banner {
     font-size: 3rem;
     text-align: center;
     background-color: #1a1a19;
@@ -69,10 +69,11 @@
   }
 
   .divider {
-    background-color: rgb(24, 24, 24);
     max-width: 600px;
     width: 90%;
     padding: 1rem;
+    border: 1px solid #000;
+    border-radius: 10px;
   }
 
   .container {

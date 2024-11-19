@@ -10,7 +10,7 @@
 <body>
   {% include 'navbar.html' %}
     <main>
-      <div class="fulllength">
+      <div class="banner">
         <h1>Welcome to The SingProJet</h1>
       </div>
       {% if not current_user.is_authenticated %}
@@ -44,8 +44,8 @@
             <form action="{{ url_for('logout') }}" method="post" style="margin-left: auto;">
                 <button type="submit" class="logout-btn">Logout</button>
             </form>
-        </div>
-    </div>
+        </div> 
+      </div>
     </main>
 </body>
 </html>
