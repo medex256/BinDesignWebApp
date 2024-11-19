@@ -7,20 +7,37 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet">
     <title>Manage Bins</title>
 </head>
+<style>
+    .edit-form {
+        display: none;
+
+    }
+    .edit-form.active {
+        display: block;
+    }
+    .edit-form input, .edit-form button {
+        margin: 5px 0;
+        width: 100%;
+        padding: 8px;
+    }
+</style>
 <body class="body-home">
     {% include 'navbar.html' %}
     <main>
         <div class="banner">
             <h1>Bin Management</h1>
         </div>
+        
         <div class="container">
+            <!-- Existing Bins Table -->
             <table class="bin-table">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Bin Type</th>
                         <th>Location</th>
-                        <th>Status</th>
+                        
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -29,12 +46,114 @@
                         <td>{{ bin.bin_id }}</td>
                         <td>{{ bin.bin_type }}</td>
                         <td>{{ bin.bin_location }}</td>
-                        <td>{{ 'Full' if bin.bin_full else 'Available' }}</td>
+                        
+                        <td>
+                            <button class="modify-btn" onclick="toggleAllEditForms('{{ bin.bin_id }}')">Modify</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5">
+                            <div id="edit-form-{{ bin.bin_id }}" class="edit-form">
+                                <form onsubmit="submitEditForm(event, '{{ bin.bin_id }}')">
+                                    <input type="hidden" name="bin_id" value="{{ bin.bin_id }}">
+                                    <div>
+                                        <label>Bin Type:</label>
+                                        <input type="text" name="bin_type" value="{{ bin.bin_type }}" class="edit-input" required>
+                                    </div>
+                                    <div>
+                                        <label>Bin Location:</label>
+                                        <input type="text" name="bin_location" value="{{ bin.bin_location }}" class="edit-input" required>
+                                    </div>
+                                   
+                                    <button type="submit" class="submit-edit-btn">Submit Changes</button>
+                                </form>
+                            </div>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+
+            <!-- Add New Bin Section -->
+            <div class="add-bin-section">
+                <h2>Add New Bin</h2>
+                <form id="add-bin-form" class="add-bin-form">
+                    <input type="text" name="bin_id" placeholder="Bin ID" required>
+                    <input type="text" name="bin_type" placeholder="Bin Type" required>
+                    <input type="text" name="bin_location" placeholder="Bin Location" required>
+                    
+                    <button type="submit">Add New Bin</button>
+                </form>
+            </div>
         </div>
     </main>
+    <!--the javascript is to control the modify form pop out or not by using the active-->
+    <script>
+        // Toggle edit form visibility for all forms
+        function toggleAllEditForms(selectedBinId) {
+            // First, hide all edit forms
+            const allEditForms = document.querySelectorAll('.edit-form');
+            allEditForms.forEach(form => {
+                if (form.id !== `edit-form-${selectedBinId}`) {
+                    form.classList.remove('active');
+                }
+            });
+
+            // Then toggle the selected bin's form
+            const selectedEditForm = document.getElementById(`edit-form-${selectedBinId}`);
+            selectedEditForm.classList.toggle('active');
+        }
+
+        // Edit existing bin function
+        function submitEditForm(event, binId) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+
+            fetch('/update_bin', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Bin updated successfully');
+                    location.reload();
+                } else {
+                    alert('Failed to update bin: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the bin');
+            });
+        }
+
+        // Add new bin function
+        document.getElementById('add-bin-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+
+            fetch('/add_new_bin', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('New bin added successfully');
+                    location.reload(); // Reload to show the new bin
+                } else {
+                    alert('Failed to add bin: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while adding the bin');
+            });
+        });
+    </script>
 </body>
 </html>
