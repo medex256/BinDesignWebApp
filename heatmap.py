@@ -71,8 +71,9 @@ def heatmap(data : list[datetime], weeks : int = 32, width = 800, height = 300) 
     for item in data:
         date = datetime.strptime(item,date_format) if isinstance(item, str) else item
         if weekday - timedelta(days=7*weeks) <= date and date <= weekday:
-            z[-(weekday-date).days] += 1
-            if z > zmax: zmax = z
+            day = -(weekday-date).days
+            z[day] += 1
+            if z[day] > zmax: zmax = z[day]
     
     z = np.reshape(z,(-1 , 7)).transpose(1,0)
 
