@@ -3,9 +3,10 @@
     font-family: 'Open Sans';
     --text-primary: #d1d3c8;
     --text-glow: #f6fcdf;
+    --bg-primary: #373739;
     --bg-secondary: #1a1a19;
     --bg-nav2: #2a2a2f;
-    --bg-primary: #373739;
+    --bg-glow: #5a5a5e;
     --transition-speed: 600ms;
     --shadow1: 0 0 10px rgba(0, 0, 0, 0.1);
     --symbol: #859f3d;
@@ -256,6 +257,8 @@ input {
     padding: 0.5rem;
     border-radius: 4px;
     box-sizing: border-box;
+    color: var(--text-primary);
+    font-weight: 600;
 }
 
 .messages {
@@ -298,16 +301,15 @@ button {
   border-radius: 4px;
   cursor: pointer;
   transition: var(--transition-speed);
-  font-weight: bold;
 
   text-decoration: none;
   color: rgba(255, 255, 255, 0.8);
-  font-weight: normal;
-  text-transform: uppercase;
+  font-weight: 600;
   transition: all 0.2s ease-in-out
 }
 button:hover {
   color: var(--text-glow);
+  background-color: var(--bg-glow); 
 }
 
 .logout-btn {
@@ -316,6 +318,9 @@ button:hover {
   margin: .5rem;
   background-color: #951717;
   cursor: pointer;
+}
+.logout-btn:hover {
+  background-color: #b61717;
 }
 .messages {
   margin-bottom: 1rem;
@@ -332,7 +337,7 @@ button:hover {
   color: white;
 }
 .user-icon {
-  background-color: #4CAF50;
+  background-color: #499054;
   border-radius: 50%;
   width: 30px;
   height: 30px;
