@@ -130,7 +130,6 @@ def qrbutton_js():
 
 
 @app.route('/about')
-@admin_required
 def about():
     if request.method == 'POST':
         log_message()
@@ -192,8 +191,25 @@ def manage_users():
     users = User.query.all()
     return render_template('manage_users.html', users=users, current_user=current_user)
 
+
+
+@app.route('/update_user_role/<int:user_id>', methods=['POST'])
+@login_required
+@admin_required
+def update_user_role(user_id):
+    user = User.query.get_or_404(user_id)
+    new_role = request.form.get('role')
+    if new_role == 'user':
+        user.userlv = 0
+        db.session.commit()
+    elif new_role == 'admin':
+        user.userlv = 1
+        db.session.commit()
+    return redirect(url_for('manage_users'))
+
 @app.route('/manage_bins')
 @login_required
+@admin_required
 def manage_bins():
     if request.method == 'POST':
         log_message()
