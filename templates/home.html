@@ -36,6 +36,16 @@
         <p>Bob Loblaw</p>
       </div>
       {% endif %}
+
+      <div class="container">
+        <div class="selector">
+            <div class="user-icon">{{ current_user.username[0].upper() }}</div>
+            <span>{{ current_user.username }}</span>
+            <form action="{{ url_for('logout') }}" method="post" style="margin-left: auto;">
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
+        </div>
+    </div>
     </main>
 </body>
 </html>
