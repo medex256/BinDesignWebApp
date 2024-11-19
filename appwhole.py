@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, flash, redirect, url_for
+from flask import Flask, request, jsonify, render_template, flash, redirect, url_for, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from datetime import datetime, timedelta, date, time
@@ -11,6 +11,7 @@ import plotly.offline as pyo
 from heatmap import heatmap, streak
 import pytz
 import logging
+from functools import wraps
 
 temp_sessions = {}
 
@@ -33,6 +34,15 @@ login_manager.login_view = 'login'
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or current_user.userlv != 1:
+            abort(403)  # Forbidden
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 # Models
 class User(db.Model, UserMixin):
@@ -78,7 +88,7 @@ class Bin(db.Model):
 class RegisterForm(FlaskForm):
     username = StringField(validators=[InputRequired(), Length(min=4, max=50)], render_kw={"placeholder": "Username"})
     user_password = PasswordField(validators=[InputRequired(), Length(min=8, max=50)], render_kw={"placeholder": "Password"})
-    confirm_password = PasswordField('confirm_password', validators=[DataRequired(), EqualTo('user_password')], render_kw={"placeholder": "Confirm Password"})
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('user_password')], render_kw={"placeholder": "Confirm Password"})
     submit = SubmitField('Register')
 
     def validate_username(self, username):
@@ -120,6 +130,7 @@ def qrbutton_js():
 
 
 @app.route('/about')
+@admin_required
 def about():
     if request.method == 'POST':
         log_message()
@@ -161,7 +172,7 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.user_password, form.user_password.data):
             login_user(user)
-            flash('Logged in successfully!', 'success')
+            flash('Logged out successfully!', 'success')
             return redirect(url_for('personal_page'))
         else:
             flash('Invalid username or password', 'error')
