@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, flash, redirect, url_for
+from flask import Flask, request, jsonify, render_template, flash, redirect, url_for, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from datetime import datetime, timedelta, date, time
@@ -11,6 +11,7 @@ import plotly.offline as pyo
 from heatmap import heatmap, streak
 import pytz
 import logging
+from functools import wraps
 
 temp_sessions = {}
 
@@ -33,6 +34,15 @@ login_manager.login_view = 'login'
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or current_user.userlv != 1:
+            abort(403)  # Forbidden
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 # Models
 class User(db.Model, UserMixin):
@@ -120,10 +130,22 @@ def qrbutton_js():
 
 
 @app.route('/about')
+@admin_required
 def about():
     if request.method == 'POST':
         log_message()
     return render_template('about.html')
+
+@app.route('/while_throwing')
+def while_throwing():
+    return render_template('while_throwing.html')
+
+@app.route('/after_throwing')
+def after_throwing():
+    if request.method == 'POST':
+        log_message()
+    return render_template('after_throwing.html')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -150,7 +172,7 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.user_password, form.user_password.data):
             login_user(user)
-            flash('Logged in successfully!', 'success')
+            flash('Logged out successfully!', 'success')
             return redirect(url_for('personal_page'))
         else:
             flash('Invalid username or password', 'error')
@@ -202,12 +224,9 @@ def qrcode():
         current_time = datetime.now(pytz.UTC)
         temp_sessions[f"{user_id}_{bin_id}"] = current_time
         
-        return jsonify({
-            'message': 'Session started',
-            'user_id': user_id,
-            'bin_id': bin_id,
-            'start_time': current_time.isoformat()
-        }), 200
+        return redirect(url_for('while_throwing'))
+            
+ 
         
     except Exception as e:
         logging.error(f"Error in qrcode endpoint: {str(e)}")
@@ -269,12 +288,7 @@ def end_session():
                 # Clean up temporary session data
                 del temp_sessions[session_key]
                 
-                return jsonify({
-                    'message': 'Session ended successfully',
-                    'duration': str(duration),
-                    'trash_count': trash_count,
-                    'total_score': leaderboard.user_score
-                }), 200
+                return redirect(url_for('after_throwing'))
                 
             except Exception as e:
                 db.session.rollback()
@@ -365,7 +379,8 @@ def personal_page():
     # Format the dates for the heatmap
     data = []
     for session in user_sessions:
-        data.append(session.session_date)
+        date_str = session.session_date.strftime('%Y-%m-%d')
+        data.append(date_str)
 
     plot_html = pyo.plot(
         figure_or_data = heatmap(data=data, weeks=25, width=600,height=200),
