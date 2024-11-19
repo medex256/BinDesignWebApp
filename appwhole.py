@@ -11,6 +11,8 @@ import plotly.offline as pyo
 from heatmap import heatmap, streak
 import pytz
 import logging
+# from flask_socketio import SocketIO, send, ConnectionRefusedError 
+
 
 temp_sessions = {}
 
@@ -19,6 +21,30 @@ temp_sessions = {}
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///smart_bin.db'
 app.config['SECRET_KEY'] = 'your-secret-key-here'
+
+# socketio
+# socket_bins = {}
+# socketio = SocketIO(app)
+
+# @socketio.on('connect')
+# def test_connect(auth):
+    
+#     bin_id = request.headers.get('bin_id',type=int) # with the use of extraHeaders, only in handshake
+   
+#     print(f" [socketio] begin connection {auth} {bin_id}")
+#     if True:
+#         socket_bins['1'] = request.sid
+#         print(f' [socketio] Client connected {request.sid}')
+#     else:
+#         raise ConnectionRefusedError
+
+# @socketio.on('disconnect')
+# def test_disconnect():
+#     keys_to_delete = [key for key, value in socket_bins.items() if value == request.sid]
+#     for key in keys_to_delete:
+#         print(f' [socketio] removed bin {key}')
+#         del socket_bins[key]
+#     print(f' [socketio] Client disconnected {request.sid}')
 
 # Initialize extensions
 db = SQLAlchemy(app)
@@ -202,6 +228,14 @@ def qrcode():
         current_time = datetime.now(pytz.UTC)
         temp_sessions[f"{user_id}_{bin_id}"] = current_time
         
+        # send socketio
+        # sid = socket_bins.get(str(bin_id),None)
+        # if sid:
+        #     print(' [socketio] tell bin to open')
+        #     send('open bin!',boardcast=False,to=sid,namespace='')
+        # else:
+        #     print(' [socketio] bin is not connected')
+
         return jsonify({
             'message': 'Session started',
             'user_id': user_id,
@@ -451,3 +485,4 @@ def leaderboard():
 
 if __name__ == '__main__':
     app.run(debug=True)
+    # socketio.run(app,debug=True)
