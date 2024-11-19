@@ -30,13 +30,13 @@
         
         <div class="container">
             <!-- Existing Bins Table -->
+             <h3>Existing Bins</h3>
             <table class="bin-table">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Bin Type</th>
                         <th>Location</th>
-                        
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -75,17 +75,18 @@
             </table>
 
             <!-- Add New Bin Section -->
-            <div class="add-bin-section">
-                <h2>Add New Bin</h2>
-                <form id="add-bin-form" class="add-bin-form">
-                    <input type="text" name="bin_id" placeholder="Bin ID" required>
-                    <input type="text" name="bin_type" placeholder="Bin Type" required>
-                    <input type="text" name="bin_location" placeholder="Bin Location" required>
-                    
-                    <button type="submit">Add New Bin</button>
-                </form>
-            </div>
+            
         </div>
+        <div class="container">
+            <h3>Add New Bin</h3>
+            <form id="add-bin-form">
+                    <label>Bin Type:</label>
+                    <input type="text" name="bin_type" class="edit-input" required>
+                    <label>Bin Location:</label>
+                    <input type="text" name="bin_location" class="edit-input" required>
+                
+                <button type="submit" class="submit-edit-btn" style="margin-top: 1rem;">Add Bin</button>
+            </form> 
     </main>
     <!--the javascript is to control the modify form pop out or not by using the active-->
     <script>
