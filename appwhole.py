@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, flash, redirect, url_for
+from flask import Flask, request, jsonify, render_template, flash, redirect, url_for, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from datetime import datetime, date
@@ -11,6 +11,7 @@ import plotly.offline as pyo
 from heatmap import heatmap, streak
 import pytz
 import logging
+from functools import wraps
 # from flask_socketio import SocketIO, send, ConnectionRefusedError 
 
 
@@ -60,13 +61,22 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or current_user.userlv != 'Admin':
+            abort(403)  # Forbidden
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 # Models
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     user_password = db.Column(db.String(100), nullable=False)
     session_count = db.Column(db.Integer, default=0)
-    userlv = db.Column(db.Integer, default=0)
+    userlv = db.Column(db.String(80), nullable=False, default='User')
     sessions = db.relationship('Session', backref='user', lazy='dynamic')
     leaderboard_entry = db.relationship('Leaderboard', backref='user', uselist=False)
 
@@ -104,7 +114,7 @@ class Bin(db.Model):
 class RegisterForm(FlaskForm):
     username = StringField(validators=[InputRequired(), Length(min=4, max=50)], render_kw={"placeholder": "Username"})
     user_password = PasswordField(validators=[InputRequired(), Length(min=8, max=50)], render_kw={"placeholder": "Password"})
-    confirm_password = PasswordField('confirm_password', validators=[DataRequired(), EqualTo('user_password')], render_kw={"placeholder": "Confirm Password"})
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('user_password')], render_kw={"placeholder": "Confirm Password"})
     submit = SubmitField('Register')
 
     def validate_username(self, username):
@@ -144,12 +154,21 @@ def log_message():
 def qrbutton_js():
     return app.send_static_file('qrbutton.js')
 
-
 @app.route('/about')
 def about():
     if request.method == 'POST':
         log_message()
     return render_template('about.html')
+
+@app.route('/while_throwing')
+def while_throwing():
+    return render_template('while_throwing.html')
+
+@app.route('/after_throwing')
+def after_throwing():
+    if request.method == 'POST':
+        log_message()
+    return render_template('after_throwing.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -176,7 +195,7 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.user_password, form.user_password.data):
             login_user(user)
-            flash('Logged in successfully!', 'success')
+            flash('Logged out successfully!', 'success')
             return redirect(url_for('personal_page'))
         else:
             flash('Invalid username or password', 'error')
@@ -190,19 +209,26 @@ def logout():
 
 @app.route('/manage_users')
 @login_required
+#@admin_required
 def manage_users():
     if request.method == 'POST':
         log_message()
     users = User.query.all()
     return render_template('manage_users.html', users=users, current_user=current_user)
 
-@app.route('/manage_bins')
+@app.route('/update_user_role/<int:user_id>', methods=['POST'])
 @login_required
-def manage_bins():
-    if request.method == 'POST':
-        log_message()
-    bins = Bin.query.all()
-    return render_template('manage_bins.html', bins=bins)
+#@admin_required
+def update_user_role(user_id):
+    user = User.query.get_or_404(user_id)
+    new_role = request.form.get('role')
+    if new_role == 'User':
+        user.userlv = new_role
+        db.session.commit()
+    elif new_role == 'Admin':
+        user.userlv = new_role
+        db.session.commit()
+    return redirect(url_for('manage_users'))
 
 @app.route('/qrcode', methods=['POST'])
 @login_required 
@@ -227,6 +253,9 @@ def qrcode():
         # Store start time temporarily
         current_time = datetime.now(pytz.UTC)
         temp_sessions[f"{user_id}_{bin_id}"] = current_time
+        
+        return redirect(url_for('while_throwing'))
+            
         
         # send socketio
         # sid = socket_bins.get(str(bin_id),None)
@@ -303,12 +332,7 @@ def end_session():
                 # Clean up temporary session data
                 del temp_sessions[session_key]
                 
-                return jsonify({
-                    'message': 'Session ended successfully',
-                    'duration': str(duration),
-                    'trash_count': trash_count,
-                    'total_score': leaderboard.user_score
-                }), 200
+                return redirect(url_for('after_throwing'))
                 
             except Exception as e:
                 db.session.rollback()
@@ -319,74 +343,106 @@ def end_session():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/add_bin', methods=['POST'])
-def add_bin():
+@app.route('/manage_bins')
+@login_required
+#@admin_required
+def manage_bins():
+    if request.method == 'POST':
+        log_message()
+    bins = Bin.query.all()
+    return render_template('manage_bins.html', bins=bins)
+
+@app.route('/update_bin', methods=['POST'])
+def update_bin():
     try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "No data provided"}), 400
+        # Get form data
+        bin_id = request.form.get('bin_id')
+        bin_type = request.form.get('bin_type')
+        bin_location = request.form.get('bin_location')
+        bin_full = request.form.get('bin_full') == 'on'
 
         # Validate required fields
-        required_fields = ['bin_id', 'bin_type', 'bin_location']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({"error": f"Missing required field: {field}"}), 400
-
-        bin_id = data['bin_id']
-        bin_type = data['bin_type']
-        bin_location = data['bin_location']
-        bin_full = data.get('bin_full', False)  # Default to False if not provided
-
-        # Check if bin exists
-        existing_bin = Bin.query.get(bin_id)
-
-        if existing_bin:
-            # Update existing bin
-            existing_bin.bin_full = bin_full
-            existing_bin.bin_type = bin_type
-            existing_bin.bin_location = bin_location
-            
-            db.session.commit()
-            
+        if not all([bin_id, bin_type, bin_location]):
             return jsonify({
-                "message": "Bin updated successfully",
-                "bin": {
-                    "bin_id": existing_bin.bin_id,
-                    "bin_type": existing_bin.bin_type,
-                    "bin_location": existing_bin.bin_location,
-                    "bin_full": existing_bin.bin_full
-                }
-            }), 200
-        else:
-            # Create new bin
-            new_bin = Bin(
-                bin_id=bin_id,
-                bin_full=bin_full,
-                bin_type=bin_type,
-                bin_location=bin_location
-            )
-            
-            db.session.add(new_bin)
-            db.session.commit()
-            
+                'success': False, 
+                'error': 'All fields are required'
+            }), 400
+
+        # Find the bin
+        bin_to_update = Bin.query.get(bin_id)
+
+        if not bin_to_update:
             return jsonify({
-                "message": "New bin added successfully",
-                "bin": {
-                    "bin_id": new_bin.bin_id,
-                    "bin_type": new_bin.bin_type,
-                    "bin_location": new_bin.bin_location,
-                    "bin_full": new_bin.bin_full
-                }
-            }), 201
+                'success': False, 
+                'error': 'Bin not found'
+            }), 404
+
+        # Update bin details
+        bin_to_update.bin_type = bin_type
+        bin_to_update.bin_location = bin_location
+        bin_to_update.bin_full = bin_full
+
+        # Commit changes
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'message': 'Bin updated successfully'
+        }), 200
 
     except Exception as e:
         db.session.rollback()
         return jsonify({
-            "error": "Failed to process request",
-            "details": str(e)
+            'success': False, 
+            'error': str(e)
         }), 500
 
+@app.route('/add_new_bin', methods=['POST'])
+def add_new_bin():
+    try:
+        # Extract form data
+        bin_id = request.form.get('bin_id')
+        bin_type = request.form.get('bin_type')
+        bin_location = request.form.get('bin_location')
+        bin_full = request.form.get('bin_full') == 'on'
 
+        # Validate required fields
+        if not all([bin_id, bin_type, bin_location]):
+            return jsonify({
+                'success': False, 
+                'error': 'All fields are required'
+            }), 400
+
+        # Check if bin already exists
+        existing_bin = Bin.query.get(bin_id)
+        if existing_bin:
+            return jsonify({
+                'success': False, 
+                'error': 'Bin ID already exists'
+            }), 400
+
+        # Create new bin
+        new_bin = Bin(
+            bin_id=bin_id,
+            bin_full=bin_full,
+            bin_type=bin_type,
+            bin_location=bin_location
+        )
+        
+        db.session.add(new_bin)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'New bin added successfully'
+        }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False, 
+            'error': str(e)
+        }), 500
 
 @app.route('/personal_page')
 @login_required
@@ -399,7 +455,8 @@ def personal_page():
     # Format the dates for the heatmap
     data = []
     for session in user_sessions:
-        data.append(session.session_date)
+        date_str = session.session_date.strftime('%Y-%m-%d')
+        data.append(date_str)
 
     plot_html = pyo.plot(
         figure_or_data = heatmap(data=data, weeks=25, width=600,height=200),
@@ -444,9 +501,6 @@ def personal_page():
         username=current_user.username
     )
 
-
-
-
 @app.route('/leaderboard')
 @login_required
 def leaderboard():
@@ -481,7 +535,6 @@ def leaderboard():
     return render_template('leaderboard.html', 
                          leaderboard=ranked_users, 
                          current_user_rank=current_user_rank)
-
 
 if __name__ == '__main__':
     app.run(debug=True)

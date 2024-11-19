@@ -11,7 +11,7 @@
 <body>
     {% include 'navbar.html' %}
     <main>
-        <div class="fulllength">
+        <div class="banner">
             <h1>Logging into The SingProJet</h1>
             <h2>Back to recycle more?</h2>
         </div>
@@ -30,8 +30,8 @@
             {% endwith %}
             <form method="POST" action="{{ url_for('login') }}">
                 {{ form.hidden_tag() }}
-                <div> {{ form.username.label }} {{ form.username }} </div>
-                <div> {{ form.user_password.label }} {{ form.user_password }} </div>
+                <div class="form-group"> {{ form.username.label }} {{ form.username }} </div>
+                <div class="form-group"> {{ form.user_password.label }} {{ form.user_password }} </div>
                 {{ form.submit }}
             </form>
             <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
