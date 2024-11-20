@@ -280,6 +280,15 @@ def qrcode():
 
 @app.route('/end_session', methods=['POST'])
 def end_session():
+       # Send curl command to ESP32
+    esp32_url = "http://your-esp32-ip-address/your-endpoint"  # Replace with your ESP32's IP and endpoint
+    try:
+        response = requests.post(esp32_url, timeout=5)
+        if response.status_code != 200:
+            return jsonify({'error': 'ESP32 communication failed'}), 500
+    except requests.exceptions.RequestException as e:
+        return jsonify({'error': f'ESP32 connection error: {str(e)}'}), 500
+
     try:
         data = request.get_json()
         user_id = data.get('user_id')
