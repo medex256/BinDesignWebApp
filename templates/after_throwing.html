@@ -8,8 +8,8 @@
 </head>
 
 <body>
+    {% include 'navbar.html' %}
     <main>
-        {% include 'navbar.html' %}
         <div class="banner">
             <h1>Session Summary</h1>
             <h2>Good Progress, {{ current_user.username }}!</h2>
