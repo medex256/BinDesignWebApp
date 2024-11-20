@@ -230,6 +230,8 @@ def update_user_role(user_id):
         db.session.commit()
     return redirect(url_for('manage_users'))
 
+
+
 @app.route('/qrcode', methods=['POST'])
 @login_required 
 def qrcode():
@@ -265,12 +267,12 @@ def qrcode():
         # else:
         #     print(' [socketio] bin is not connected')
 
-        return jsonify({
-            'message': 'Session started',
-            'user_id': user_id,
-            'bin_id': bin_id,
-            'start_time': current_time.isoformat()
-        }), 200
+        #return jsonify({
+            #'message': 'Session started',
+            #'user_id': user_id,
+            #'bin_id': bin_id,
+            #'start_time': current_time.isoformat()
+        #}), 200
         
     except Exception as e:
         logging.error(f"Error in qrcode endpoint: {str(e)}")
