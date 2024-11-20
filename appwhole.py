@@ -234,12 +234,12 @@ def qrcode():
         
         return redirect(url_for('while_throwing'))
 
-        #return jsonify({
-            #'message': 'Session started',
-            #'user_id': user_id,
-            #'bin_id': bin_id,
-            #'start_time': current_time.isoformat()
-        #}), 200
+        return jsonify({
+            'message': 'Session started',
+            'user_id': user_id,
+            'bin_id': bin_id,
+            'start_time': current_time.isoformat()
+        }), 200
         
     except Exception as e:
         logging.error(f"Error in qrcode endpoint: {str(e)}")
@@ -247,29 +247,32 @@ def qrcode():
 
 @app.route('/end_session', methods=['POST'])
 def end_session():
-       # Send curl command to ESP32
-    esp32_url = "http://your-esp32-ip-address/your-endpoint"  # Replace with your ESP32's IP and endpoint
     try:
-        response = requests.post(esp32_url, timeout=5)
-        if response.status_code != 200:
-            return jsonify({'error': 'ESP32 communication failed'}), 500
-    except requests.exceptions.RequestException as e:
-        return jsonify({'error': f'ESP32 connection error: {str(e)}'}), 500
-
-    try:
-        data = request.get_json()
-        user_id = data.get('user_id')
-        bin_id = data.get('bin_id')
-        trash_count = data.get('trash_count', 0)
+        # Get bin_id from the request
+        bin_id = request.get_json().get('bin_id')
+        trash_count = request.get_json().get('trash_count', 0)
         
-        if not user_id or not bin_id:
+        if not bin_id:
+            return jsonify({'error': 'Missing bin_id'}), 400
+        
+        # Find the corresponding user_id in temp_sessions
+        matching_session_key = None
+        user_id = None
+        
+        for key, start_time in list(temp_sessions.items()):
+            if key.split('_')[1] == str(bin_id):
+                matching_session_key = key
+                user_id = int(key.split('_')[0])
+                break
+        
+        if not matching_session_key:
+            return jsonify({'error': 'No active session found for this bin'}), 404
+        
+        if not bin_id:
             return jsonify({'error': 'Missing user_id or bin_id'}), 400
         
         session_key = f"{user_id}_{bin_id}"
         start_time = temp_sessions.get(session_key)
-        
-        if not start_time:
-            return jsonify({'error': 'No active session found'}), 404
         
         # Calculate session duration
         end_time = datetime.now(pytz.UTC)
