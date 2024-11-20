@@ -27,6 +27,18 @@
         <div class="banner">
             <h1>Bin Management</h1>
         </div>
+
+        <div class="container">
+            <div class="selector">
+                <span>Admin Toolbar</span>
+                <form action="{{ url_for('manage_users') }}" style=" margin-left:auto; float: right;">
+                    <button type="submit">Manage Users</button>
+                </form>
+                <form action="{{ url_for('manage_bins') }}" style=" margin-left:1rem; float: right;">
+                    <button type="submit">Manage Bins</button>
+                </form>
+            </div>
+        </div>
         
         <div class="container">
             <!-- Existing Bins Table -->
@@ -77,6 +89,7 @@
             <!-- Add New Bin Section -->
             
         </div>
+        
         <div class="container">
             <h3>Add New Bin</h3>
             <form id="add-bin-form">
