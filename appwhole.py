@@ -13,14 +13,14 @@ import pytz
 import logging
 from functools import wraps
 
-
+#☆*: .｡. o(≧▽≦)o .｡.:*☆
 temp_sessions = {}
 
 
 # Create the Flask app
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///smart_bin.db'
-app.config['SECRET_KEY'] = 'your-secret-key-here'
+app.config['SECRET_KEY'] = 'reswzxdfcgh87654rg9876tcf876tgu6cfghiuuytfjklmnbvcxzqwerts4vkuyr6esx'
 
 
 
@@ -238,7 +238,7 @@ def qrcode():
         current_time = datetime.now(pytz.UTC)
         temp_sessions[f"{user_id}_{bin_id}"] = current_time
         
-        return redirect(url_for('while_throwing'))
+       # return redirect(url_for('while_throwing'))
 
         return jsonify({
             'message': 'Session started',
@@ -394,23 +394,25 @@ def add_new_bin():
         bin_full = request.form.get('bin_full') == 'on'
 
         # Validate required fields
-        if not all([bin_id, bin_type, bin_location]):
+        if not all([ bin_type, bin_location]):
             return jsonify({
                 'success': False, 
                 'error': 'All fields are required'
             }), 400
 
-        # Check if bin already exists
-        existing_bin = Bin.query.get(bin_id)
-        if existing_bin:
-            return jsonify({
-                'success': False, 
-                'error': 'Bin ID already exists'
-            }), 400
+        def generate_bin_id():
+            while True:
+                bin_id = random.randint(10000000, 99999999)
+                existing_bin = Bin.query.filter_by(bin_id=bin_id).first()
+                if not existing_bin:
+                    return bin_id
+
+        # Generate new bin ID
+        new_bin_id = generate_bin_id()
 
         # Create new bin
         new_bin = Bin(
-            bin_id=bin_id,
+            bin_id=new_bin_id,
             bin_full=bin_full,
             bin_type=bin_type,
             bin_location=bin_location
@@ -423,6 +425,40 @@ def add_new_bin():
             'success': True,
             'message': 'New bin added successfully'
         }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'success': False, 
+            'error': str(e)
+        }), 500
+    
+@app.route('/delete_bin', methods=['POST'])
+def delete_bin():
+    try:
+        bin_id = request.form.get('bin_id')
+
+        if not bin_id:
+            return jsonify({
+                'success': False, 
+                'error': 'Bin ID is required'
+            }), 400
+
+        bin_to_delete = Bin.query.get(bin_id)
+        
+        if not bin_to_delete:
+            return jsonify({
+                'success': False, 
+                'error': 'Bin not found'
+            }), 404
+
+        db.session.delete(bin_to_delete)
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'message': 'Bin deleted successfully'
+        }), 200
 
     except Exception as e:
         db.session.rollback()
