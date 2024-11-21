@@ -23,6 +23,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///smart_bin.db'
 app.config['SECRET_KEY'] = 'your-secret-key-here'
 
 
+
 # Initialize extensions
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
@@ -69,9 +70,14 @@ class Session(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)#who is in the session
     session_date = db.Column(db.Date, nullable=False)#date of use
     session_time = db.Column(db.Time, nullable=False)#time of use
-    time_used = db.Column(db.Interval, nullable=False)#how long the user used 
+    end_time = db.Column(db.Time, nullable=True)
+    time_used = db.Column(db.Interval, nullable=True)#how long the user used 
     bin_id = db.Column(db.Integer, db.ForeignKey('bin.bin_id'), nullable=False)#which bin
     trash_count = db.Column(db.Integer, default=0)#how much rubbish
+    active = db.Column(db.Boolean, default=True)
+
+    #user = db.relationship('User')
+    #bin = db.relationship('Bin')
 
 class Leaderboard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -245,7 +251,7 @@ def qrcode():
         logging.error(f"Error in qrcode endpoint: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-@app.route('/end_session', methods=['POST'])
+"""@app.route('/end_session', methods=['POST'])
 def end_session():
     try:
         # Get bin_id from the request
@@ -322,7 +328,7 @@ def end_session():
             return jsonify({'error': 'User not found'}), 404
             
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': str(e)}), 500"""
 
 @app.route('/manage_bins')
 @login_required
@@ -432,7 +438,8 @@ def personal_page():
         log_message()
     # Get all sessions for the current user
     user_sessions = Session.query.filter_by(user_id=current_user.id).all()
-    
+    bins = Bin.query.all()
+    active_session = Session.query.filter_by(user_id=current_user.id, active=True).first()
     # Format the dates for the heatmap
     data = []
     for session in user_sessions:
@@ -479,6 +486,8 @@ def personal_page():
         total_sessions=total_sessions,
         total_trash=total_trash,
         user_score=user_score,
+        bins=bins,
+        active_session=active_session,
         username=current_user.username
     )
 
@@ -517,5 +526,108 @@ def leaderboard():
                          leaderboard=ranked_users, 
                          current_user_rank=current_user_rank)
 
+
+
+
+@app.route('/start_session', methods=['POST'])
+@login_required
+def start_session():
+    data = request.get_json()
+    bin_id = data.get('bin_id')
+
+    if not bin_id:
+        return jsonify({'status': 'error', 'message': 'Bin ID is required.'}), 400
+
+    # Check if user already has an active session
+    active_session = Session.query.filter_by(user_id=current_user.id, active=True).first()
+    if active_session:
+        return jsonify({'status': 'error', 'message': 'An active session already exists.'}), 400
+
+    # Create a new session
+    new_session = Session(
+        user_id=current_user.id,
+        bin_id=bin_id,
+        session_date=datetime.now().date(),
+        session_time=datetime.now().time(),
+        trash_count=0,
+        active=True
+    )
+    db.session.add(new_session)
+    db.session.commit()
+
+
+    return jsonify({'status': 'success', 'session_id': new_session.sessionid}), 200
+
+
+
+
+@app.route('/end_session', methods=['POST'])
+@login_required
+def end_session():
+    data = request.get_json()
+    session_id = data.get('session_id')
+
+    if not session_id:
+        return jsonify({'status': 'error', 'message': 'Session ID is required.'}), 400
+
+    # Retrieve the active session
+    session = Session.query.filter_by(sessionid=session_id, user_id=current_user.id, active=True).first()
+    if not session:
+        return jsonify({'status': 'error', 'message': 'Active session not found.'}), 404
+
+    # End the session
+    session.active = False
+    session.end_time = datetime.now().time()
+    start_datetime = datetime.combine(session.session_date, session.session_time)
+    end_datetime = datetime.combine(session.session_date, session.end_time) if session.end_time else datetime.utcnow()
+    session.time_used = end_datetime - start_datetime
+
+    db.session.commit()
+
+    return jsonify({'status': 'success', 'message': 'Session ended successfully.'}), 200
+
+
+
+@app.route('/update_trash_count', methods=['POST'])
+def update_trash_count():
+    data = request.get_json()
+    session_id = data.get('session_id')
+    trash_count = data.get('trash_count')
+
+    if not session_id or trash_count is None:
+        return jsonify({'status': 'error', 'message': 'Session ID and Trash Count are required.'}), 400
+
+    # Retrieve the session regardless of its active status
+    session = Session.query.filter_by(sessionid=session_id).first()
+    if not session:
+        return jsonify({'status': 'error', 'message': 'Session not found.'}), 404
+
+    # Update trash count
+    session.trash_count = trash_count
+    db.session.commit()
+
+    return jsonify({'status': 'success', 'trash_count': session.trash_count}), 200
+
+
+
+
+@app.route('/get_active_session', methods=['GET'])
+def get_active_session():
+    bin_id = request.args.get('bin_id', type=int)
+
+    if not bin_id:
+        return jsonify({'status': 'error', 'message': 'Bin ID is required.'}), 400
+
+    # Retrieve the active session for the given bin
+    session = Session.query.filter_by(bin_id=bin_id, active=True).first()
+
+    if not session:
+        return jsonify({'status': 'error', 'message': 'No active session found for this bin.'}), 404
+
+    return jsonify({'status': 'success', 'session_id': session.sessionid}), 200
+
+
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run("0.0.0.0",port=5000,debug=True)
