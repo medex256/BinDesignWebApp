@@ -41,6 +41,36 @@
             </table>
         </div>
         <div class="container">
+            <h3>Recycling Ranks</h3>
+            <p>Your current rank is highlighted in green. Higher ranks require more recycling.</p>
+            <table class="table-borderless" id="rankingTable" style="cursor: pointer;">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Rank</th>
+                        <th>Requirement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for name, min in total_trash_achievement.items() %}
+                    <tr class="{% if name == user_ranking %}highlight{% else %}hidden{% endif %}">
+                        <td>{{ name }}</td>
+                        <td>{{ min }}{% if name == user_ranking %} ({{ total_trash }}){% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <script>
+                document.getElementById('rankingTable').onclick = function() {
+                    console.log('pressed');
+                    const rows = this.querySelectorAll('tbody tr');
+                    rows.forEach(element => {
+                        if (!element.classList.contains('highlight'))
+                            element.classList.toggle('hidden');
+                    });
+                };
+            </script>
+        </div>
+        <div class="container">
             <div class="selector">
                 <div class="user-icon">{{ current_user.username[0].upper() }}</div>
                 <span>{{ current_user.username }}</span>

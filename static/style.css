@@ -358,6 +358,13 @@ button:hover {
   max-width: 100%;
 }
 
+.highlight {
+  background-color: #4ef07977;
+}
+.hidden {
+  display: none;
+}
+
 
 table {
   width: 90%;

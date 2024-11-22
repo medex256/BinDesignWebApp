@@ -510,6 +510,20 @@ def personal_page():
     longest_streak_dates = "" if longest_streak == 0 else f"From: {longest_streak_start.strftime(date_format)} To: {longest_streak_end.strftime(date_format)}"
     current_streak_dates = (f"Last recycled {current_streak_ago} days ago" if current_streak_ago > 0 else "") if current_streak == 0 else f"From: {current_streak_start.strftime(date_format)} To: {current_streak_end.strftime(date_format)}"
 
+    # ranking / achievement
+
+    total_trash_achievement = {
+        "Novice Recycler": 0,
+        "Intermediate Recycler": 1,
+        "Expert Recycler": 2,
+        "Champion Recycler": 3,
+        "Eco Warrior": 5,
+    }
+    user_ranking = "Novice Recycler"
+    for ranking, min in total_trash_achievement.items():
+        if total_trash >= min:
+            user_ranking = ranking
+    
     return render_template(
         'personal_page.html', 
         plot=plot_html,
@@ -521,6 +535,8 @@ def personal_page():
         current_streak_dates=current_streak_dates,
         total_sessions=total_sessions,
         total_trash=total_trash,
+        total_trash_achievement=total_trash_achievement,
+        user_ranking = user_ranking,
         user_score=user_score,
         bins=bins,
         active_session=active_session,
