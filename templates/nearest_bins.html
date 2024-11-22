@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nearest Bins</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <main>
+        <div class="container">
+            <h1>Nearest Bins</h1>
+            
+            <div id="loading" class="loading">
+                Finding nearest bins...
+            </div>
+
+            <div id="error" class="error-message" style="display: none;">
+            </div>
+
+            <div id="user-location" class="user-location" style="display: none;">
+            </div>
+
+            <div id="bin-list" class="bin-list">
+            </div>
+        </div>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingDiv = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+            const userLocationDiv = document.getElementById('user-location');
+            const binListDiv = document.getElementById('bin-list');
+
+            loadingDiv.style.display = 'block';
+
+            fetch('/nearest-bins')
+                .then(response => response.json())
+                .then(data => {
+                    loadingDiv.style.display = 'none';
+
+                    if (data.error) {
+                        errorDiv.textContent = data.error;
+                        errorDiv.style.display = 'block';
+                        return;
+                    }
+
+                    
+                    
+
+                    // Display ranked bins
+                    data.ranked_bins.forEach(bin => {
+                        const binDiv = document.createElement('div');
+                        binDiv.className = `bin-item ${bin.is_full ? 'full' : ''}`;
+                        
+                        binDiv.innerHTML = `
+                            <h3>Bin #${bin.bin_id} - ${bin.bin_type}</h3>
+                            <p>Location: ${bin.location}</p>
+                            <p class="distance">Distance: ${bin.distance.toFixed(2)} km</p>
+                            <p>Status: ${bin.is_full ? 'Full' : 'Available'}</p>
+                        `;
+                        
+                        binListDiv.appendChild(binDiv);
+                    });
+                })
+                .catch(error => {
+                    loadingDiv.style.display = 'none';
+                    errorDiv.textContent = 'Error loading bin locations. Please try again later.';
+                    errorDiv.style.display = 'block';
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+</body>
+</html>

@@ -71,7 +71,13 @@
                                     <input type="hidden" name="bin_id" value="{{ bin.bin_id }}">
                                     <div>
                                         <label>Bin Type:</label>
-                                        <input type="text" name="bin_type" value="{{ bin.bin_type }}" class="edit-input" required>
+                                        <select id = "bin_type" name="bin_type" class="edit-input" required>
+                                            <option value="" disabled selected hidden>Select your option</option>
+                                            <option value = 'Paper'>Paper</option>
+                                            <option value = "Plastic">Plastic</option>
+                                            <option value = "Metal">Metal</option>
+                                            <option value = "Glass">Glass</option>
+                                        </select>
                                     </div>
                                     <div>
                                         <label>Bin Location:</label>
