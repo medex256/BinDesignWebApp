@@ -3,7 +3,10 @@
 <head>
     <title>Nearest Bins</title>
     
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700&display=swap" rel="stylesheet" />
 </head>
 <body>
     {% include 'navbar.html' %}
@@ -11,14 +14,13 @@
         <div class="container">
             <h1>Nearest Bins</h1>
             
-            <div id="loading" class="loading">
+            <button onclick="getLocation()" class="location-btn">Find Nearest Bins</button>
+
+            <div id="loading" class="loading" style="display: none;">
                 Finding nearest bins...
             </div>
 
             <div id="error" class="error-message" style="display: none;">
-            </div>
-
-            <div id="user-location" class="user-location" style="display: none;">
             </div>
 
             <div id="bin-list" class="bin-list">
@@ -26,50 +28,86 @@
         </div>
     </main>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        function getLocation() {
             const loadingDiv = document.getElementById('loading');
             const errorDiv = document.getElementById('error');
-            const userLocationDiv = document.getElementById('user-location');
             const binListDiv = document.getElementById('bin-list');
 
             loadingDiv.style.display = 'block';
+            binListDiv.innerHTML = '';
+            errorDiv.style.display = 'none';
 
-            fetch('/nearest-bins')
-                .then(response => response.json())
-                .then(data => {
-                    loadingDiv.style.display = 'none';
-
-                    if (data.error) {
-                        errorDiv.textContent = data.error;
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    sendLocation,
+                    (error) => {
+                        loadingDiv.style.display = 'none';
+                        errorDiv.textContent = 'Unable to access your location. Please enable location services.';
                         errorDiv.style.display = 'block';
-                        return;
                     }
+                );
+            } else {
+                loadingDiv.style.display = 'none';
+                errorDiv.textContent = 'Geolocation is not supported by your browser.';
+                errorDiv.style.display = 'block';
+            }
+        }
 
-                    
-                    
+        function sendLocation(position) {
+            const data = {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude
+            };
+            
+            fetch('/update-location', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(updateUI)
+            .catch(handleError);
+        }
 
-                    // Display ranked bins
-                    data.ranked_bins.forEach(bin => {
-                        const binDiv = document.createElement('div');
-                        binDiv.className = `bin-item ${bin.is_full ? 'full' : ''}`;
-                        
-                        binDiv.innerHTML = `
-                            <h3>Bin #${bin.bin_id} - ${bin.bin_type}</h3>
-                            <p>Location: ${bin.location}</p>
-                            <p class="distance">Distance: ${bin.distance.toFixed(2)} km</p>
-                            <p>Status: ${bin.is_full ? 'Full' : 'Available'}</p>
-                        `;
-                        
-                        binListDiv.appendChild(binDiv);
-                    });
-                })
-                .catch(error => {
-                    loadingDiv.style.display = 'none';
-                    errorDiv.textContent = 'Error loading bin locations. Please try again later.';
-                    errorDiv.style.display = 'block';
-                    console.error('Error:', error);
-                });
-        });
+        function updateUI(data) {
+            const loadingDiv = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+            const binListDiv = document.getElementById('bin-list');
+
+            loadingDiv.style.display = 'none';
+
+            if (data.error) {
+                errorDiv.textContent = data.error;
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            data.ranked_bins.forEach(bin => {
+                const binDiv = document.createElement('div');
+                binDiv.className = `bin-item ${bin.is_full ? 'full' : ''}`;
+                
+                binDiv.innerHTML = `
+                    <h3>Bin #${bin.bin_id} - ${bin.bin_type}</h3>
+                    <p>Location: ${bin.location}</p>
+                    <p class="distance">Distance: ${bin.distance.toFixed(2)} km</p>
+                    <p>Status: ${bin.is_full ? 'Full' : 'Available'}</p>
+                `;
+                
+                binListDiv.appendChild(binDiv);
+            });
+        }
+
+        function handleError(error) {
+            const loadingDiv = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+            
+            loadingDiv.style.display = 'none';
+            errorDiv.textContent = 'Error loading bin locations. Please try again later.';
+            errorDiv.style.display = 'block';
+            console.error('Error:', error);
+        }
     </script>
 </body>
 </html>

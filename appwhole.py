@@ -221,40 +221,19 @@ def get_coordinates(address):
         return (location.latitude, location.longitude)
     return None
 
-def get_client_location():
-    try:
-        ip_response = requests.get('https://api.ipify.org?format=json')
-        if ip_response.status_code == 200:
-            ip = ip_response.json()['ip']
-            
-            # Now get location from IP
-            response = requests.get(f'https://ipapi.co/{ip}/json/')
-            if response.status_code == 200:
-                data = response.json()
-                lat = data.get('latitude')
-                lon = data.get('longitude')
-                if lat and lon:
-                    return (lat, lon)
-        
-        return None  # Instead of fallback location
-    except:
-        return None
+    
 
-@app.route('/nearest-bins', methods=['GET'])
-def find_nearest_bins():
-    try:
-        # Get user location
-        user_coord = get_client_location()
-        if not user_coord:
-            return jsonify({
-                'error': 'Unable to determine your location'
-            }), 400
+@app.route('/update-location', methods=['POST'])
+def update_location():
+    data = request.get_json()
+    if not data or 'latitude' not in data or 'longitude' not in data:
+        return jsonify({'error': 'Location data required'}), 400
 
-        # Get all bins from database
+    try:
+        user_coord = (float(data['latitude']), float(data['longitude']))
         bins = Bin.query.all()
         bin_distances = []
 
-        # Calculate distance for each bin
         for bin in bins:
             bin_coords = get_coordinates(bin.bin_location)
             if bin_coords:
@@ -267,7 +246,6 @@ def find_nearest_bins():
                     'is_full': bin.bin_full
                 })
 
-        # Sort bins by distance
         ranked_bins = sorted(bin_distances, key=lambda x: x['distance'])
 
         return jsonify({
@@ -276,7 +254,7 @@ def find_nearest_bins():
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
+    
 @app.route('/view-bins')
 def view_bins_page():
     return render_template('nearest_bins.html')
