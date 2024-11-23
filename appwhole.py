@@ -9,6 +9,7 @@ import random
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 import plotly.offline as pyo
 from heatmap import heatmap, streak
+from garbageclassification import garbage_classification
 import pytz
 import logging
 from functools import wraps
@@ -294,6 +295,21 @@ def qrcode():
         
     except Exception as e:
         logging.error(f"Error in qrcode endpoint: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+# TODO just like qrcode need a button to console.log('detect') to take a picture in app and post
+@app.route('/detect', methods=['POST'])
+@login_required
+def detect():
+    try:
+        image_path = request.get_data(as_text=True)
+        result = garbage_classification(image_path)
+
+        return render_template('detect_result.html',result=result)
+
+        return jsonify(result), 200
+    except Exception as e:
+        logging.error(f"Error in detect endpoint: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 """@app.route('/end_session', methods=['POST'])
