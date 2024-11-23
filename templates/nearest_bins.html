@@ -29,6 +29,7 @@
     </main>
     <script>
         function getLocation() {
+            console.log("getLocation function called");
             const loadingDiv = document.getElementById('loading');
             const errorDiv = document.getElementById('error');
             const binListDiv = document.getElementById('bin-list');
@@ -38,15 +39,26 @@
             errorDiv.style.display = 'none';
 
             if (navigator.geolocation) {
+                console.log("Geolocation is supported");
                 navigator.geolocation.getCurrentPosition(
-                    sendLocation,
+                    (position) => {
+                        console.log("Position obtained:", position);
+                        sendLocation(position);
+                    },
                     (error) => {
+                        console.log("Geolocation error:", error);
                         loadingDiv.style.display = 'none';
                         errorDiv.textContent = 'Unable to access your location. Please enable location services.';
                         errorDiv.style.display = 'block';
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
                     }
                 );
             } else {
+                console.log("Geolocation is not supported");
                 loadingDiv.style.display = 'none';
                 errorDiv.textContent = 'Geolocation is not supported by your browser.';
                 errorDiv.style.display = 'block';
@@ -54,6 +66,7 @@
         }
 
         function sendLocation(position) {
+            console.log("Sending location to server");
             const data = {
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude
@@ -72,6 +85,7 @@
         }
 
         function updateUI(data) {
+            console.log("Updating UI with data:", data);
             const loadingDiv = document.getElementById('loading');
             const errorDiv = document.getElementById('error');
             const binListDiv = document.getElementById('bin-list');
@@ -89,7 +103,7 @@
                 binDiv.className = `bin-item ${bin.is_full ? 'full' : ''}`;
                 
                 binDiv.innerHTML = `
-                    <h3>Bin #${bin.bin_id} - ${bin.bin_type}</h3>
+                    <h3>${bin.bin_type} Bin</h3>
                     <p>Location: ${bin.location}</p>
                     <p class="distance">Distance: ${bin.distance.toFixed(2)} km</p>
                     <p>Status: ${bin.is_full ? 'Full' : 'Available'}</p>
@@ -100,14 +114,17 @@
         }
 
         function handleError(error) {
+            console.error("Error in request:", error);
             const loadingDiv = document.getElementById('loading');
             const errorDiv = document.getElementById('error');
             
             loadingDiv.style.display = 'none';
             errorDiv.textContent = 'Error loading bin locations. Please try again later.';
             errorDiv.style.display = 'block';
-            console.error('Error:', error);
         }
+
+        // Verify the script is loaded
+        console.log("Location script loaded");
     </script>
 </body>
 </html>
