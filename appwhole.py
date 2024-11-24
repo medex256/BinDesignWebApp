@@ -297,15 +297,21 @@ def qrcode():
         logging.error(f"Error in qrcode endpoint: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/detect')
+def detect_submit():
+    return render_template('detect_submit.html'), 200
+
 # TODO just like qrcode need a button to console.log('detect') to take a picture in app and post
 @app.route('/detect', methods=['POST'])
-@login_required
-def detect():
+def detect_result():
     try:
-        image_path = request.get_data(as_text=True)
-        result = garbage_classification(image_path)
-
-        return render_template('detect_result.html',result=result)
+        file = request.files['file']
+        if file.mimetype == 'application/octet-stream':
+            print('fuck me cant fix this')
+        print(file)
+        result = garbage_classification(file)
+        print(result)
+        return render_template('detect_result.html',result=result), 200
 
         return jsonify(result), 200
     except Exception as e:

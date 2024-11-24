@@ -10,9 +10,27 @@
 <body>
     {% include 'navbar.html' %}
     <main>
-        <div class="banner">
+        <div class="container">
             <h1>Garbage Classificaltion</h1>
             <h2>AI says this is a {{ result[0].label }}!</h2>
+        </div>
+        <div class="container">
+            <table class="table-borderless">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Label</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in result %}
+                    <tr>
+                        <td>{{ r.label }}</td>
+                        <td>{{ r.score }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </main>
 </body>
