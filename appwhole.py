@@ -305,7 +305,7 @@ def detect_submit():
 @app.route('/detect', methods=['POST'])
 def detect_result():
     try:
-        file = request.files['file']
+        file = request.files.pop()
         if file.mimetype == 'application/octet-stream':
             print('fuck me cant fix this')
         print(file)
