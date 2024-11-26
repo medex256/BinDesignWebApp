@@ -640,6 +640,8 @@ def end_session():
 
     db.session.commit()
 
+    return redirect(url_for('after_throwing'))
+
     return jsonify({'status': 'success', 'message': 'Session ended successfully.'}), 200
 
 
