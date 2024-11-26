@@ -147,7 +147,10 @@ def about():
 
 @app.route('/while_throwing')
 def while_throwing():
-    return render_template('while_throwing.html')
+    active_session = Session.query.filter_by(user_id=current_user.id, active=True).first()
+    if active_session:
+        return jsonify({'status': 'error', 'message': 'An active session already exists.'}), 400
+    return render_template('while_throwing.html',active_session=active_session)
 
 @app.route('/after_throwing')
 def after_throwing():
