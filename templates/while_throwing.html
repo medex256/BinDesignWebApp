@@ -83,12 +83,12 @@
                             // Reload the page to reflect changes
                             window.location.reload();
                         } else {
-                            alert(data.message);
+                            // alert(data.message);
                         }
                     })
                     .catch((error) => {
                         console.error('Error:', error);
-                        alert('An error occurred while ending the session.');
+                        // alert('An error occurred while ending the session.');
                     });
                 });
             {% else %}
@@ -98,10 +98,10 @@
                     const binSelect = document.getElementById('bin-select');
                     const binId = binSelect.value;
     
-                    if (!binId) {
-                        alert('Please select a bin.');
-                        return;
-                    }
+                    // if (!binId) {
+                    //     // alert('Please select a bin.');
+                    //     return;
+                    // }
     
                     // Prepare JSON data
                     const data = {
@@ -123,12 +123,12 @@
                             // Reload the page to reflect changes
                             window.location.reload();
                         } else {
-                            alert(data.message);
+                            // alert(data.message);
                         }
                     })
                     .catch((error) => {
                         console.error('Error:', error);
-                        alert('An error occurred while starting the session.');
+                        // alert('An error occurred while starting the session.');
                     });
                 });
             {% endif %}
