@@ -9,7 +9,7 @@ import random
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 import plotly.offline as pyo
 from heatmap import heatmap, streak
-from garbageclassification import garbage_classification
+#from garbageclassification import garbage_classification
 import pytz
 import logging
 from functools import wraps
@@ -222,8 +222,6 @@ def get_coordinates(address):
         return (location.latitude, location.longitude)
     return None
 
-    
-
 @app.route('/update-location', methods=['POST'])
 def update_location():
     data = request.get_json()
@@ -280,18 +278,33 @@ def qrcode():
         if not bin_exists:
             return jsonify({'error': 'Bin not found'}), 404
         
-        # Store start time temporarily
-        current_time = datetime.now(pytz.UTC)
-        temp_sessions[f"{user_id}_{bin_id}"] = current_time
-        
-       # return redirect(url_for('while_throwing'))
+        # Check if user already has an active session
+        active_session = Session.query.filter_by(user_id=current_user.id, active=True).first()
+        if active_session:
+            return jsonify({'status': 'error', 'message': 'An active session already exists.'}), 400
 
-        return jsonify({
+        # Create a new session
+        new_session = Session(
+            user_id=current_user.id,
+            bin_id=bin_id,
+            session_date=datetime.now().date(),
+            session_time=datetime.now().time(),
+            trash_count=0,
+            active=True
+        )
+        db.session.add(new_session)
+        db.session.commit()
+        
+        
+        return redirect(url_for('while_throwing'))
+
+        """return jsonify({
             'message': 'Session started',
             'user_id': user_id,
             'bin_id': bin_id,
-            'start_time': current_time.isoformat()
+            'start_time': datetime.now().time().strftime(date_format)
         }), 200
+    """
         
     except Exception as e:
         logging.error(f"Error in qrcode endpoint: {str(e)}")
@@ -318,84 +331,7 @@ def detect_result():
         logging.error(f"Error in detect endpoint: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-"""@app.route('/end_session', methods=['POST'])
-def end_session():
-    try:
-        # Get bin_id from the request
-        bin_id = request.get_json().get('bin_id')
-        trash_count = request.get_json().get('trash_count', 0)
-        
-        if not bin_id:
-            return jsonify({'error': 'Missing bin_id'}), 400
-        
-        # Find the corresponding user_id in temp_sessions
-        matching_session_key = None
-        user_id = None
-        
-        for key, start_time in list(temp_sessions.items()):
-            if key.split('_')[1] == str(bin_id):
-                matching_session_key = key
-                user_id = int(key.split('_')[0])
-                break
-        
-        if not matching_session_key:
-            return jsonify({'error': 'No active session found for this bin'}), 404
-        
-        if not bin_id:
-            return jsonify({'error': 'Missing user_id or bin_id'}), 400
-        
-        session_key = f"{user_id}_{bin_id}"
-        start_time = temp_sessions.get(session_key)
-        
-        # Calculate session duration
-        end_time = datetime.now(pytz.UTC)
-        duration = end_time - start_time
-        
-        # Create new session record
-        new_session = Session(
-            user_id=user_id,
-            bin_id=bin_id,
-            session_date=date.today(),
-            session_time=start_time.time(),
-            time_used=duration,
-            trash_count=trash_count
-        )
-        
-        # Update user's session count
-        user = User.query.get(user_id)
-        if user:
-            user.session_count += 1
-            
-            # Update or create leaderboard entry
-            leaderboard = Leaderboard.query.filter_by(user_id=user_id).first()
-            if not leaderboard:
-                leaderboard = Leaderboard(
-                    user_id=user_id,
-                    user_score=trash_count  # Initialize with current trash count
-                )
-                db.session.add(leaderboard)
-            else:
-                # Ensure user_score is initialized if it's None
-                if leaderboard.user_score is None:
-                    leaderboard.user_score = 0
-                leaderboard.user_score += trash_count
-        
-            try:
-                db.session.add(new_session)
-                db.session.commit()
-                # Clean up temporary session data
-                del temp_sessions[session_key]
-                
-                return redirect(url_for('after_throwing'))
-                
-            except Exception as e:
-                db.session.rollback()
-                return jsonify({'error': str(e)}), 500
-        else:
-            return jsonify({'error': 'User not found'}), 404
-            
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500"""
+
 
 @app.route('/manage_bins')
 @login_required
@@ -744,6 +680,42 @@ def get_active_session():
         return jsonify({'status': 'error', 'message': 'No active session found for this bin.'}), 404
 
     return jsonify({'status': 'success', 'session_id': session.sessionid}), 200
+
+
+
+@app.route('/get_bin_status', methods=['GET'])
+def get_bin_status():
+    bin_id = request.args.get('bin_id', type=int)
+    if bin_id is None:
+        return jsonify({'status': 'error', 'message': 'Bin ID is required.'}), 400
+
+    bin = Bin.query.get(bin_id)
+    if bin:
+        return jsonify({'status': 'success', 'bin_full': bin.bin_full}), 200
+    else:
+        return jsonify({'status': 'error', 'message': 'Bin not found.'}), 404
+    
+
+
+@app.route('/update_bin_status', methods=['POST'])
+def update_bin_status():
+    data = request.get_json()
+    if not data:
+        return jsonify({'status': 'error', 'message': 'Invalid JSON.'}), 400
+
+    bin_id = data.get('bin_id')
+    bin_full = data.get('binFull')
+
+    if bin_id is None or bin_full is None:
+        return jsonify({'status': 'error', 'message': 'Bin ID and binFull status are required.'}), 400
+
+    bin = Bin.query.get(bin_id)
+    if bin:
+        bin.bin_full = bin_full
+        db.session.commit()
+        return jsonify({'status': 'success', 'message': 'Bin status updated.'}), 200
+    else:
+        return jsonify({'status': 'error', 'message': 'Bin not found.'}), 404
 
 
 
