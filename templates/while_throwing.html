@@ -18,6 +18,12 @@
             
         </div>
 
+        <div class="container">
+            <!--
+            <form action="{{ url_for('sffsdfasdfasjfhafoshflhaifakhdfanlksdfhai') }}">
+                <button type="submit">End Session</button>
+            </form>
+            -->
 
             <div class="container mt-5">
                 <div class="card">
@@ -61,9 +67,9 @@
                 const endSessionBtn = document.getElementById('end-session-btn');
                 endSessionBtn.addEventListener('click', function() {
                     // Confirm the action
-                    if (!confirm('Are you sure you want to end the session?')) {
+                    /*if (!confirm('Are you sure you want to end the session?')) {
                         return;
-                    }
+                    }*/
     
                     // Prepare JSON data
                     const data = {
@@ -75,7 +81,6 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            
                         },
                         body: JSON.stringify(data),
                     })
@@ -83,14 +88,14 @@
                     .then(data => {
                         if (data.status === 'success') {
                             // Reload the page to reflect changes
-                            window.location.reload();
+                            window.location.href ='{{ url_for("after_throwing")  }}'
                         } else {
-                            alert(data.message);
+                            // alert(data.message);
                         }
                     })
                     .catch((error) => {
                         console.error('Error:', error);
-                        alert('An error occurred while ending the session.');
+                        // alert('An error occurred while ending the session.');
                     });
                 });
             {% else %}
@@ -100,10 +105,10 @@
                     const binSelect = document.getElementById('bin-select');
                     const binId = binSelect.value;
     
-                    if (!binId) {
-                        alert('Please select a bin.');
-                        return;
-                    }
+                    // if (!binId) {
+                    //     // alert('Please select a bin.');
+                    //     return;
+                    // }
     
                     // Prepare JSON data
                     const data = {
@@ -125,12 +130,12 @@
                             // Reload the page to reflect changes
                             window.location.reload();
                         } else {
-                            alert(data.message);
+                            // alert(data.message);
                         }
                     })
                     .catch((error) => {
                         console.error('Error:', error);
-                        alert('An error occurred while starting the session.');
+                        // alert('An error occurred while starting the session.');
                     });
                 });
             {% endif %}
