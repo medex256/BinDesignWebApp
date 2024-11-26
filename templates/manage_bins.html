@@ -10,7 +10,6 @@
 <style>
     .edit-form {
         display: none;
-
     }
     .edit-form.active {
         display: block;
@@ -39,10 +38,10 @@
                 </form>
             </div>
         </div>
-        
+
         <div class="container">
             <!-- Existing Bins Table -->
-             <h3>Existing Bins</h3>
+            <h3>Existing Bins</h3>
             <table class="bin-table">
                 <thead>
                     <tr>
@@ -58,10 +57,8 @@
                         <td>{{ bin.bin_id }}</td>
                         <td>{{ bin.bin_type }}</td>
                         <td>{{ bin.bin_location }}</td>
-                        
                         <td>
                             <button class="modify-btn" onclick="toggleAllEditForms('{{ bin.bin_id }}')">Modify</button>
-                            
                         </td>
                     </tr>
                     <tr>
@@ -71,20 +68,23 @@
                                     <input type="hidden" name="bin_id" value="{{ bin.bin_id }}">
                                     <div>
                                         <label>Bin Type:</label>
-                                        <select id = "bin_type" name="bin_type" class="edit-input" required>
+                                        <select id="bin_type" name="bin_type" class="edit-input" required>
                                             <option value="" disabled selected hidden>Select your option</option>
-                                            <option value = 'Paper'>Paper</option>
-                                            <option value = "Plastic">Plastic</option>
-                                            <option value = "Metal">Metal</option>
-                                            <option value = "Glass">Glass</option>
+                                            <option value='Paper'>Paper</option>
+                                            <option value="Plastic">Plastic</option>
+                                            <option value="Metal">Metal</option>
+                                            <option value="Glass">Glass</option>
                                         </select>
                                     </div>
                                     <div>
                                         <label>Bin Location:</label>
                                         <input type="text" name="bin_location" value="{{ bin.bin_location }}" class="edit-input" required>
                                     </div>
+                                    <div>
+                                        <label>Bin Full:</label>
+                                        <input type="checkbox" name="bin_full" {% if bin.bin_full %}checked{% endif %}>
+                                    </div>
                                     <button class="delete_btn" onclick="deleteBin('{{ bin.bin_id }}')">Delete</button>
-                                   
                                     <button type="submit" class="submit-edit-btn">Submit Changes</button>
                                 </form>
                             </div>
@@ -93,30 +93,27 @@
                     {% endfor %}
                 </tbody>
             </table>
-
-            <!-- Add New Bin Section -->
-            
         </div>
-        
+
         <div class="container">
             <h3>Add New Bin</h3>
             <form id="add-bin-form">
-                    
-                    <label>Bin Type:</label>
-                    <select id = "bin_type" name="bin_type" class="edit-input" required>
-                        <option value="" disabled selected hidden>Select your option</option>
-                        <option value = 'Paper'>Paper</option>
-                        <option value = "Plastic">Plastic</option>
-                        <option value = "Metal">Metal</option>
-                        <option value = "Glass">Glass</option>
-                    </select>
-                    <label>Bin Location:</label>
-                    <input type="text" name="bin_location" class="edit-input" required>
+                <label>Bin Type:</label>
+                <select id="bin_type" name="bin_type" class="edit-input" required>
+                    <option value="" disabled selected hidden>Select your option</option>
+                    <option value='Paper'>Paper</option>
+                    <option value="Plastic">Plastic</option>
+                    <option value="Metal">Metal</option>
+                    <option value="Glass">Glass</option>
+                </select>
+                <label>Bin Location:</label>
+                <input type="text" name="bin_location" class="edit-input" required>
+                <label>Bin Full:</label>
                 
                 <button type="submit" class="submit-edit-btn" style="margin-top: 1rem;">Add Bin</button>
-            </form> 
+            </form>
+        </div>
     </main>
-    <!--the javascript is to control the modify form pop out or not by using the active-->
     <script>
         // Toggle edit form visibility for all forms
         function toggleAllEditForms(selectedBinId) {
@@ -136,7 +133,7 @@
         // Edit existing bin function
         function submitEditForm(event, binId) {
             event.preventDefault();
-            
+
             const form = event.target;
             const formData = new FormData(form);
 
@@ -162,7 +159,7 @@
         // Add new bin function
         document.getElementById('add-bin-form').addEventListener('submit', function(event) {
             event.preventDefault();
-            
+
             const formData = new FormData(event.target);
 
             fetch('/add_new_bin', {
@@ -183,30 +180,31 @@
                 alert('An error occurred while adding the bin');
             });
         });
-        function deleteBin(binId) {
-    if (confirm('Are you sure you want to delete this bin?')) {
-        const formData = new FormData();
-        formData.append('bin_id', binId);
 
-        fetch('/delete_bin', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Bin deleted successfully');
-                location.reload();
-            } else {
-                alert('Failed to delete bin: ' + data.error);
+        function deleteBin(binId) {
+            if (confirm('Are you sure you want to delete this bin?')) {
+                const formData = new FormData();
+                formData.append('bin_id', binId);
+
+                fetch('/delete_bin', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Bin deleted successfully');
+                        location.reload();
+                    } else {
+                        alert('Failed to delete bin: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the bin');
+                });
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while deleting the bin');
-        });
-    }
-}
+        }
     </script>
 </body>
 </html>
