@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Nearest Bins</title>
-    
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -13,7 +13,7 @@
     <main>
         <div class="container">
             <h1>Nearest Bins</h1>
-            
+
             <button onclick="getLocation()" class="location-btn">Find Nearest Bins</button>
 
             <div id="loading" class="loading" style="display: none;">
@@ -28,6 +28,11 @@
         </div>
     </main>
     <script>
+        const fallbackCoordinates = {
+            latitude: 22.3356576, // Example: Latitude for San Francisco
+            longitude: 114.1735655 // Example: Longitude for San Francisco
+        };
+
         function getLocation() {
             console.log("getLocation function called");
             const loadingDiv = document.getElementById('loading');
@@ -47,9 +52,7 @@
                     },
                     (error) => {
                         console.log("Geolocation error:", error);
-                        loadingDiv.style.display = 'none';
-                        errorDiv.textContent = 'Unable to access your location. Please enable location services.';
-                        errorDiv.style.display = 'block';
+                        useFallbackLocation();
                     },
                     {
                         enableHighAccuracy: true,
@@ -59,19 +62,22 @@
                 );
             } else {
                 console.log("Geolocation is not supported");
-                loadingDiv.style.display = 'none';
-                errorDiv.textContent = 'Geolocation is not supported by your browser.';
-                errorDiv.style.display = 'block';
+                useFallbackLocation();
             }
+        }
+
+        function useFallbackLocation() {
+            console.log("Using fallback location");
+            sendLocation(fallbackCoordinates);
         }
 
         function sendLocation(position) {
             console.log("Sending location to server");
             const data = {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude
+                latitude: position.coords ? position.coords.latitude : position.latitude,
+                longitude: position.coords ? position.coords.longitude : position.longitude
             };
-            
+
             fetch('/update-location', {
                 method: 'POST',
                 headers: {
@@ -101,14 +107,14 @@
             data.ranked_bins.forEach(bin => {
                 const binDiv = document.createElement('div');
                 binDiv.className = `bin-item ${bin.is_full ? 'full' : ''}`;
-                
+
                 binDiv.innerHTML = `
                     <h3>${bin.bin_type} Bin</h3>
                     <p>Location: ${bin.location}</p>
                     <p class="distance">Distance: ${bin.distance.toFixed(2)} km</p>
                     <p>Status: ${bin.is_full ? 'Full' : 'Available'}</p>
                 `;
-                
+
                 binListDiv.appendChild(binDiv);
             });
         }
@@ -117,7 +123,7 @@
             console.error("Error in request:", error);
             const loadingDiv = document.getElementById('loading');
             const errorDiv = document.getElementById('error');
-            
+
             loadingDiv.style.display = 'none';
             errorDiv.textContent = 'Error loading bin locations. Please try again later.';
             errorDiv.style.display = 'block';
