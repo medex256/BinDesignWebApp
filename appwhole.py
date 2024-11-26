@@ -296,14 +296,15 @@ def qrcode():
         db.session.commit()
         
         
-       # return redirect(url_for('while_throwing'))
+        return redirect(url_for('while_throwing'))
 
-        return jsonify({
+        """return jsonify({
             'message': 'Session started',
             'user_id': user_id,
             'bin_id': bin_id,
-            'start_time': datetime.now().time()
+            'start_time': datetime.now().time().strftime(date_format)
         }), 200
+    """
         
     except Exception as e:
         logging.error(f"Error in qrcode endpoint: {str(e)}")
