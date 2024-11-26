@@ -747,6 +747,42 @@ def get_active_session():
 
 
 
+@app.route('/get_bin_status', methods=['GET'])
+def get_bin_status():
+    bin_id = request.args.get('bin_id', type=int)
+    if bin_id is None:
+        return jsonify({'status': 'error', 'message': 'Bin ID is required.'}), 400
+
+    bin = Bin.query.get(bin_id)
+    if bin:
+        return jsonify({'status': 'success', 'bin_full': bin.bin_full}), 200
+    else:
+        return jsonify({'status': 'error', 'message': 'Bin not found.'}), 404
+    
+
+
+@app.route('/update_bin_status', methods=['POST'])
+def update_bin_status():
+    data = request.get_json()
+    if not data:
+        return jsonify({'status': 'error', 'message': 'Invalid JSON.'}), 400
+
+    bin_id = data.get('bin_id')
+    bin_full = data.get('binFull')
+
+    if bin_id is None or bin_full is None:
+        return jsonify({'status': 'error', 'message': 'Bin ID and binFull status are required.'}), 400
+
+    bin = Bin.query.get(bin_id)
+    if bin:
+        bin.bin_full = bin_full
+        db.session.commit()
+        return jsonify({'status': 'success', 'message': 'Bin status updated.'}), 200
+    else:
+        return jsonify({'status': 'error', 'message': 'Bin not found.'}), 404
+
+
+
 
 if __name__ == '__main__':
     app.run("0.0.0.0",port=5000,debug=True)
