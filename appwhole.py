@@ -278,9 +278,23 @@ def qrcode():
         if not bin_exists:
             return jsonify({'error': 'Bin not found'}), 404
         
-        # Store start time temporarily
-        current_time = datetime.now(pytz.UTC)
-        temp_sessions[f"{user_id}_{bin_id}"] = current_time
+        # Check if user already has an active session
+        active_session = Session.query.filter_by(user_id=current_user.id, active=True).first()
+        if active_session:
+            return jsonify({'status': 'error', 'message': 'An active session already exists.'}), 400
+
+        # Create a new session
+        new_session = Session(
+            user_id=current_user.id,
+            bin_id=bin_id,
+            session_date=datetime.now().date(),
+            session_time=datetime.now().time(),
+            trash_count=0,
+            active=True
+        )
+        db.session.add(new_session)
+        db.session.commit()
+        
         
        # return redirect(url_for('while_throwing'))
 
@@ -288,7 +302,7 @@ def qrcode():
             'message': 'Session started',
             'user_id': user_id,
             'bin_id': bin_id,
-            'start_time': current_time.isoformat()
+            'start_time': datetime.now().time()
         }), 200
         
     except Exception as e:
