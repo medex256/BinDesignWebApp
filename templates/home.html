@@ -11,7 +11,7 @@
   {% include 'navbar.html' %}
     <main>
       <div class="banner">
-        <h1>Welcome to The SingProJet</h1>
+        <h1>Welcome to The EcoTrack</h1>
       </div>
       {% if not current_user.is_authenticated %}
       <div class="container">
@@ -19,6 +19,8 @@
         <p>It may be a good idea to login with your account.</p>
         <p>Sincerely,</p>
         <p>Bob Loblaw</p>
+        <form action="{{ url_for('login') }}">
+          <button type="submit">Login</button>
       </div>     
       {% endif %}
       {% if current_user.is_authenticated %}
