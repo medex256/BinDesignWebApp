@@ -48,6 +48,7 @@
                         <th>ID</th>
                         <th>Bin Type</th>
                         <th>Location</th>
+                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -57,6 +58,7 @@
                         <td>{{ bin.bin_id }}</td>
                         <td>{{ bin.bin_type }}</td>
                         <td>{{ bin.bin_location }}</td>
+                        <td>{{bin.bin_full}}</td>
                         <td>
                             <button class="modify-btn" onclick="toggleAllEditForms('{{ bin.bin_id }}')">Modify</button>
                         </td>
