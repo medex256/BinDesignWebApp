@@ -81,7 +81,7 @@
                     .then(data => {
                         if (data.status === 'success') {
                             // Reload the page to reflect changes
-                            window.location.href ='{{ redirect(url_for("after_throwing"))  }}'
+                            window.location.href ='{{ url_for("after_throwing")  }}'
                         } else {
                             // alert(data.message);
                         }
