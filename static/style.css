@@ -217,6 +217,7 @@
     
 
   }
+
   
   /* Large screens */
   @media only screen and (min-width: 600px) {
@@ -394,4 +395,21 @@ select{
   --text-secondary: #ececec;
   --bg-primary: #5f5f5f;
   --bg-secondary: #2f2f2f;
+}
+
+
+.bin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Optional: Adds space between items */
+}
+
+.bin-item {
+  padding: 10px;
+  border-radius: 4px;
+  color: var(--text-glow);
+  background-color: var(--bg-glow);
+  box-shadow: var(--shadow1);
+  margin: .5rem;
+  padding: 1rem;
 }
