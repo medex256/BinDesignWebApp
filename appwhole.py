@@ -612,33 +612,29 @@ def leaderboard():
 
 
 
-#from flask import redirect, url_for, flash
 
 @app.route('/start_session', methods=['POST'])
 @login_required
 def start_session():
-    bin_id = request.form.get('bin_id')
+    data = request.get_json()
+    bin_id = data.get('bin_id')
 
     if not bin_id:
-        flash('Bin ID is required.', 'error')
-        return redirect(url_for('personal_page'))
+        return jsonify({'status': 'error', 'message': 'Bin ID is required.'}), 400
 
     # Check if user already has an active session
     active_session = Session.query.filter_by(user_id=current_user.id, active=True).first()
     if active_session:
-        flash('An active session already exists.', 'error')
-        return redirect(url_for('personal_page'))
+        return jsonify({'status': 'error', 'message': 'An active session already exists.'}), 400
 
-    # Fetch the selected bin
+    # Fetch the selected bin from the database
     selected_bin = Bin.query.get(bin_id)
     if not selected_bin:
-        flash('Bin not found.', 'error')
-        return redirect(url_for('personal_page'))
+        return jsonify({'status': 'error', 'message': 'Bin not found.'}), 404
 
     # Check if the bin is full
     if selected_bin.bin_full:
-        flash('Cannot start a session. The selected bin is full.', 'error')
-        return redirect(url_for('personal_page'))
+        return jsonify({'status': 'error', 'message': 'Cannot start a session. The selected bin is full.'}), 400
 
     # Create a new session
     new_session = Session(
@@ -652,8 +648,7 @@ def start_session():
     db.session.add(new_session)
     db.session.commit()
 
-    flash('Session started successfully!', 'success')
-    return redirect(url_for('personal_page'))
+    return jsonify({'status': 'success', 'session_id': new_session.sessionid}), 200
 
 
 
@@ -664,8 +659,7 @@ def end_session():
     session_id = data.get('session_id')
 
     if not session_id:
-        flash('Session ID is required.', 'error')
-        return redirect(url_for('personal_page'))
+        return jsonify({'status': 'error', 'message': 'Session ID is required.'}), 400
 
     # Retrieve the active session
     session = Session.query.filter_by(sessionid=session_id, user_id=current_user.id, active=True).first()
@@ -681,7 +675,7 @@ def end_session():
 
     db.session.commit()
 
-    return redirect(url_for('personal_page'))
+    return jsonify({'status': 'success', 'message': 'Session ended successfully.'}), 200
 
 
 

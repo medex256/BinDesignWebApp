@@ -80,67 +80,39 @@
             </div>
         </div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="messages">
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
-
-
 
 
 
         <!-- Session Controls Panel -->
-<div class="container mt-5">
-    <div class="card">
-        <div class="card-header">
-            {% if active_session %}
-                <h3>Active Session</h3>
-            {% else %}
-                <h3>Start a New Session</h3>
-            {% endif %}
+        <div class="container mt-5">
+            <div class="card">
+                <div class="card-header">
+                    {% if active_session %}
+                        <h3>Active Session</h3>
+                    {% else %}
+                        <h3>Start a New Session</h3>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if active_session %}
+                        <p><strong>Bin:</strong> {{ active_session.bin.bin_type }} - {{ active_session.bin.bin_location }}</p>
+                        <p><strong>Trash Count:</strong> <span id="trash-count">{{ active_session.trash_count }}</span></p>
+                        <button id="end-session-btn" class="btn btn-danger">End Session</button>
+                    {% else %}
+                        <div class="form-group">
+                            <label for="bin-select">Select Bin:</label>
+                            <select id="bin-select" class="form-control">
+                                <option value="" disabled selected>Select a bin</option>
+                                {% for bin in bins %}
+                                    <option value="{{ bin.bin_id }}">{{ bin.bin_type }} - {{ bin.bin_location }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button id="start-session-btn" class="btn btn-primary">Start Session</button>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            {% if active_session %}
-                <p><strong>Bin:</strong> {{ active_session.bin.bin_type }} - {{ active_session.bin.bin_location }}</p>
-                <p><strong>Trash Count:</strong> <span id="trash-count">{{ active_session.trash_count }}</span></p>
-                <!-- End Session Form -->
-                <form action="{{ url_for('end_session') }}" method="post">
-                    <input type="hidden" name="session_id" value="{{ active_session.sessionid }}">
-                    <button type="submit" class="btn btn-danger">End Session</button>
-                </form>
-            {% else %}
-                <!-- Start Session Form -->
-                <form action="{{ url_for('start_session') }}" method="post">
-                    <div class="form-group">
-                        <label for="bin-select">Select Bin:</label>
-                        <select id="bin-select" name="bin_id" class="form-control">
-                            <option value="" disabled selected>Select a bin</option>
-                            {% for bin in bins %}
-                                {% if bin.bin_full %}
-                                    <option value="{{ bin.bin_id }}" disabled>
-                                        {{ bin.bin_type }} - {{ bin.bin_location }} (Full)
-                                    </option>
-                                {% else %}
-                                    <option value="{{ bin.bin_id }}">
-                                        {{ bin.bin_type }} - {{ bin.bin_location }}
-                                    </option>
-                                {% endif %}
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Start Session</button>
-                </form>
-            {% endif %}
-        </div>
-    </div>
-</div>
         
         <!-- This is a admin toolbar-->
         {% if current_user.is_authenticated %}
@@ -158,7 +130,87 @@
         {% endif %}
     </main>
     <script>
-       
+        // Ensure the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            {% if active_session %}
+                // Handle End Session
+                const endSessionBtn = document.getElementById('end-session-btn');
+                endSessionBtn.addEventListener('click', function() {
+                    // Confirm the action
+                    if (!confirm('Are you sure you want to end the session?')) {
+                        return;
+                    }
+    
+                    // Prepare JSON data
+                    const data = {
+                        session_id: '{{ active_session.sessionid }}'
+                    };
+    
+                    // Send AJAX POST request to end_session route
+                    fetch('{{ url_for("end_session") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            
+                        },
+                        body: JSON.stringify(data),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            // Reload the page to reflect changes
+                            window.location.reload();
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert('An error occurred while ending the session.');
+                    });
+                });
+            {% else %}
+                // Handle Start Session
+                const startSessionBtn = document.getElementById('start-session-btn');
+                startSessionBtn.addEventListener('click', function() {
+                    const binSelect = document.getElementById('bin-select');
+                    const binId = binSelect.value;
+    
+                    if (!binId) {
+                        alert('Please select a bin.');
+                        return;
+                    }
+    
+                    // Prepare JSON data
+                    const data = {
+                        bin_id: binId
+                    };
+    
+                    // Send AJAX POST request to start_session route
+                    fetch('{{ url_for("start_session") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            
+                        },
+                        body: JSON.stringify(data),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            // Reload the page to reflect changes
+                            window.location.reload();
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        alert('An error occurred while starting the session.');
+                    });
+                });
+            {% endif %}
+        });
     </script>
 
 
