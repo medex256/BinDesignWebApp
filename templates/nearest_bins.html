@@ -112,7 +112,7 @@
                 binDiv.className = `bin-item ${bin.is_full ? 'full' : ''}`;
 
                 binDiv.innerHTML = `
-                    <h3>${bin.bin_type} Bin</h3>
+                    <h3 style="margin-top= 0rem;">${bin.bin_type} Bin</h3>
                     <p>Location: ${bin.location}</p>
                     <p class="distance">Distance: ${bin.distance.toFixed(2)} km</p>
                     <p>Status: ${bin.is_full ? 'Full' : 'Available'}</p>

@@ -88,7 +88,7 @@
   }
   h3 {
     font-size: 1.5rem;
-    padding-left: 2rem;
+    padding-left: 1rem;
   }
 
   p {
@@ -303,7 +303,6 @@ button {
   transition: var(--transition-speed);
 
   text-decoration: none;
-  color: rgba(255, 255, 255, 0.8);
   font-weight: 600;
   transition: all 0.2s ease-in-out
 }
@@ -408,8 +407,7 @@ select{
   padding: 10px;
   border-radius: 4px;
   color: var(--text-glow);
-  background-color: var(--bg-glow);
-  box-shadow: var(--shadow1);
-  margin: .5rem;
-  padding: 1rem;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  margin-top: 1rem;
 }
