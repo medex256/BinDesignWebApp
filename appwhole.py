@@ -612,29 +612,33 @@ def leaderboard():
 
 
 
+#from flask import redirect, url_for, flash
+
 @app.route('/start_session', methods=['POST'])
 @login_required
 def start_session():
-    data = request.get_json()
-    bin_id = data.get('bin_id')
+    bin_id = request.form.get('bin_id')
 
     if not bin_id:
-        return jsonify({'status': 'error', 'message': 'Bin ID is required.'}), 400
+        flash('Bin ID is required.', 'error')
+        return redirect(url_for('personal_page'))
 
     # Check if user already has an active session
     active_session = Session.query.filter_by(user_id=current_user.id, active=True).first()
     if active_session:
-        return jsonify({'status': 'error', 'message': 'An active session already exists.'}), 400
-    
+        flash('An active session already exists.', 'error')
+        return redirect(url_for('personal_page'))
 
-    # Fetch the selected bin from the database
+    # Fetch the selected bin
     selected_bin = Bin.query.get(bin_id)
     if not selected_bin:
-        return jsonify({'status': 'error', 'message': 'Bin not found.'}), 404
+        flash('Bin not found.', 'error')
+        return redirect(url_for('personal_page'))
 
     # Check if the bin is full
     if selected_bin.bin_full:
-        return jsonify({'status': 'error', 'message': 'Cannot start a session. The selected bin is full.'}), 400
+        flash('Cannot start a session. The selected bin is full.', 'error')
+        return redirect(url_for('personal_page'))
 
     # Create a new session
     new_session = Session(
@@ -648,9 +652,8 @@ def start_session():
     db.session.add(new_session)
     db.session.commit()
 
-
-    return jsonify({'status': 'success', 'session_id': new_session.sessionid}), 200
-
+    flash('Session started successfully!', 'success')
+    return redirect(url_for('personal_page'))
 
 
 
