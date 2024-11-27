@@ -150,41 +150,38 @@ def while_throwing():
     active_session = Session.query.filter_by(user_id=current_user.id, active=True).first()
     return render_template('while_throwing.html',active_session=active_session)
 
-@app.route('/after_throwing')
+@app.route('/after_throwing', methods=['GET', 'POST'])
+@login_required
 def after_throwing():
     if request.method == 'POST':
         log_message()
-    @login_required
-    def get_last_session_summary():
-        # Get the user's last completed session
-        last_session = Session.query.filter_by(
-            user_id=current_user.id,
-            active=False
-        ).order_by(
-            Session.session_date.desc(),
-            Session.end_time.desc()
-        ).first()
+        return redirect(url_for('after_throwing'))  # Redirect to GET after POST
+    
+    # Get the last session data
+    bins = Bin.query.all()
+    last_session = Session.query.filter_by(
+        user_id=current_user.id,
+        active=False
+    ).order_by(
+        Session.session_date.desc(),
+        Session.end_time.desc()
+    ).first()
 
-        if not last_session:
-            return jsonify({'status': 'error', 'message': 'No completed sessions found.'}), 404
+    if not last_session:
+        flash('No completed sessions found.')
+        return redirect(url_for('home'))
 
-        # Calculate session duration in minutes
-        start_datetime = datetime.combine(last_session.session_date, last_session.session_time)
-        end_datetime = datetime.combine(last_session.session_date, last_session.end_time)
-        duration_minutes = (last_session.time_used.total_seconds() / 60)
+    # Calculate session duration
+    duration_minutes = (last_session.time_used.total_seconds() / 60)
 
-        summary = {
-            'status': 'success',
-            'session_id': last_session.sessionid,
-            'date': last_session.session_date.strftime('%Y-%m-%d'),
-            'start_time': last_session.session_time.strftime('%H:%M:%S'),
-            'end_time': last_session.end_time.strftime('%H:%M:%S'),
-            'duration_minutes': round(duration_minutes, 2),
-            'trash_count': last_session.trash_count,
-            'bin_id': last_session.bin_id
-        }
+    # Prepare template data
+    template_data = {
+        'count': last_session.trash_count,
+        'bin_type': last_session.bin.bin_type,  
+        'current_user': current_user
+    }
 
-        return jsonify(summary), 200
+    return render_template('after_throwing.html', **template_data)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
