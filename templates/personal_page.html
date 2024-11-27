@@ -115,7 +115,7 @@
         </div>
         
         <!-- This is a admin toolbar-->
-        {% if current_user.is_authenticated %}
+        {% if current_user.userlv == 'Admin' %}
         <div class="container">
             <div class="selector">
                 <span>Admin Toolbar</span>
