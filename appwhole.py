@@ -20,7 +20,7 @@ import requests
 #☆*: .｡. o(≧▽≦)o .｡.:*☆
 temp_sessions = {}
 
-
+#(┬┬﹏┬┬)
 # Create the Flask app
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///smart_bin.db'
@@ -154,7 +154,37 @@ def while_throwing():
 def after_throwing():
     if request.method == 'POST':
         log_message()
-    return render_template('after_throwing.html')
+    @login_required
+    def get_last_session_summary():
+        # Get the user's last completed session
+        last_session = Session.query.filter_by(
+            user_id=current_user.id,
+            active=False
+        ).order_by(
+            Session.session_date.desc(),
+            Session.end_time.desc()
+        ).first()
+
+        if not last_session:
+            return jsonify({'status': 'error', 'message': 'No completed sessions found.'}), 404
+
+        # Calculate session duration in minutes
+        start_datetime = datetime.combine(last_session.session_date, last_session.session_time)
+        end_datetime = datetime.combine(last_session.session_date, last_session.end_time)
+        duration_minutes = (last_session.time_used.total_seconds() / 60)
+
+        summary = {
+            'status': 'success',
+            'session_id': last_session.sessionid,
+            'date': last_session.session_date.strftime('%Y-%m-%d'),
+            'start_time': last_session.session_time.strftime('%H:%M:%S'),
+            'end_time': last_session.end_time.strftime('%H:%M:%S'),
+            'duration_minutes': round(duration_minutes, 2),
+            'trash_count': last_session.trash_count,
+            'bin_id': last_session.bin_id
+        }
+
+        return jsonify(summary), 200
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
