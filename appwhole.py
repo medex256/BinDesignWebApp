@@ -628,6 +628,16 @@ def start_session():
     active_session = Session.query.filter_by(user_id=current_user.id, active=True).first()
     if active_session:
         return jsonify({'status': 'error', 'message': 'An active session already exists.'}), 400
+    
+
+    # Fetch the selected bin from the database
+    selected_bin = Bin.query.get(bin_id)
+    if not selected_bin:
+        return jsonify({'status': 'error', 'message': 'Bin not found.'}), 404
+
+    # Check if the bin is full
+    if selected_bin.bin_full:
+        return jsonify({'status': 'error', 'message': 'Cannot start a session. The selected bin is full.'}), 400
 
     # Create a new session
     new_session = Session(
