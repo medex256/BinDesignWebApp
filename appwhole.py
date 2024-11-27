@@ -20,7 +20,7 @@ import requests
 #☆*: .｡. o(≧▽≦)o .｡.:*☆
 temp_sessions = {}
 
-
+#(┬┬﹏┬┬)
 # Create the Flask app
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///smart_bin.db'
@@ -150,11 +150,38 @@ def while_throwing():
     active_session = Session.query.filter_by(user_id=current_user.id, active=True).first()
     return render_template('while_throwing.html',active_session=active_session)
 
-@app.route('/after_throwing')
+@app.route('/after_throwing', methods=['GET', 'POST'])
+@login_required
 def after_throwing():
     if request.method == 'POST':
         log_message()
-    return render_template('after_throwing.html')
+        return redirect(url_for('after_throwing'))  # Redirect to GET after POST
+    
+    # Get the last session data
+    bins = Bin.query.all()
+    last_session = Session.query.filter_by(
+        user_id=current_user.id,
+        active=False
+    ).order_by(
+        Session.session_date.desc(),
+        Session.end_time.desc()
+    ).first()
+
+    if not last_session:
+        flash('No completed sessions found.')
+        return redirect(url_for('home'))
+
+    # Calculate session duration
+    duration_minutes = (last_session.time_used.total_seconds() / 60)
+
+    # Prepare template data
+    template_data = {
+        'count': last_session.trash_count,
+        'bin_type': last_session.bin.bin_type,  
+        'current_user': current_user
+    }
+
+    return render_template('after_throwing.html', **template_data)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -585,19 +612,33 @@ def leaderboard():
 
 
 
+#from flask import redirect, url_for, flash
+
 @app.route('/start_session', methods=['POST'])
 @login_required
 def start_session():
-    data = request.get_json()
-    bin_id = data.get('bin_id')
+    bin_id = request.form.get('bin_id')
 
     if not bin_id:
-        return jsonify({'status': 'error', 'message': 'Bin ID is required.'}), 400
+        flash('Bin ID is required.', 'error')
+        return redirect(url_for('personal_page'))
 
     # Check if user already has an active session
     active_session = Session.query.filter_by(user_id=current_user.id, active=True).first()
     if active_session:
-        return jsonify({'status': 'error', 'message': 'An active session already exists.'}), 400
+        flash('An active session already exists.', 'error')
+        return redirect(url_for('personal_page'))
+
+    # Fetch the selected bin
+    selected_bin = Bin.query.get(bin_id)
+    if not selected_bin:
+        flash('Bin not found.', 'error')
+        return redirect(url_for('personal_page'))
+
+    # Check if the bin is full
+    if selected_bin.bin_full:
+        flash('Cannot start a session. The selected bin is full.', 'error')
+        return redirect(url_for('personal_page'))
 
     # Create a new session
     new_session = Session(
@@ -611,9 +652,8 @@ def start_session():
     db.session.add(new_session)
     db.session.commit()
 
-
-    return jsonify({'status': 'success', 'session_id': new_session.sessionid}), 200
-
+    flash('Session started successfully!', 'success')
+    return redirect(url_for('personal_page'))
 
 
 
@@ -624,7 +664,8 @@ def end_session():
     session_id = data.get('session_id')
 
     if not session_id:
-        return jsonify({'status': 'error', 'message': 'Session ID is required.'}), 400
+        flash('Session ID is required.', 'error')
+        return redirect(url_for('personal_page'))
 
     # Retrieve the active session
     session = Session.query.filter_by(sessionid=session_id, user_id=current_user.id, active=True).first()
@@ -640,7 +681,7 @@ def end_session():
 
     db.session.commit()
 
-    return jsonify({'status': 'success', 'message': 'Session ended successfully.'}), 200
+    return redirect(url_for('personal_page'))
 
 
 
@@ -676,11 +717,19 @@ def get_active_session():
 
     # Retrieve the active session for the given bin
     session = Session.query.filter_by(bin_id=bin_id, active=True).first()
+    if session:
+    # Access the username from the associated user
+        username = session.user.username  # Assumes 'username' is a field in the User model
+        return jsonify({
+            'status': 'success',
+            'session_id': session.sessionid,
+            'username': username
+        }), 200
 
-    if not session:
+    else:
         return jsonify({'status': 'error', 'message': 'No active session found for this bin.'}), 404
 
-    return jsonify({'status': 'success', 'session_id': session.sessionid}), 200
+    #return jsonify({'status': 'success', 'session_id': session.sessionid,'username': username}), 200
 
 
 

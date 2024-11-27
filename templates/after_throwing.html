@@ -15,9 +15,9 @@
             <h2>Good Progress, {{ current_user.username }}!</h2>
         </div>
 
-        <div class="container"></div>
-            <h3>Session Summary on __date__</h3>
-            <h4>You have thrown COUNT items in the TYPE Bin in LOCATION on TIME.</h4>
+        <div class="container">
+            <h4>You have thrown {{ count }} items. Keep it up!</h4>
+
             <h3>Thank you for your contribution!</h3>
         </div>
 
@@ -27,4 +27,6 @@
             </form>
         </div>
     </main>
+    
 </body>
+</html>
