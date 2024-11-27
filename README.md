@@ -1,7 +1,6 @@
 ﻿# BinDesignWebApp
 
+## Frontend Pages are under templates section
 
-""Frontend Pages are under templates section
-
-""Please navigate to appwhole.py to see our full backend code
+## Please navigate to appwhole.py to see our full backend code
  
