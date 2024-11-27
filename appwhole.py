@@ -213,8 +213,8 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/manage_users')
-@login_required
-#@admin_required
+@login_requiredF
+@admin_required
 def manage_users():
     if request.method == 'POST':
         log_message()
@@ -223,7 +223,7 @@ def manage_users():
 
 @app.route('/update_user_role/<int:user_id>', methods=['POST'])
 @login_required
-#@admin_required
+@admin_required
 def update_user_role(user_id):
     user = User.query.get_or_404(user_id)
     new_role = request.form.get('role')
@@ -355,7 +355,7 @@ def detect_result():
 
 @app.route('/manage_bins')
 @login_required
-#@admin_required
+@admin_required
 def manage_bins():
     if request.method == 'POST':
         log_message()
