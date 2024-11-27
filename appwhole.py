@@ -676,11 +676,19 @@ def get_active_session():
 
     # Retrieve the active session for the given bin
     session = Session.query.filter_by(bin_id=bin_id, active=True).first()
+    if session:
+    # Access the username from the associated user
+        username = session.user.username  # Assumes 'username' is a field in the User model
+        return jsonify({
+            'status': 'success',
+            'session_id': session.sessionid,
+            'username': username
+        }), 200
 
-    if not session:
+    else:
         return jsonify({'status': 'error', 'message': 'No active session found for this bin.'}), 404
 
-    return jsonify({'status': 'success', 'session_id': session.sessionid}), 200
+    #return jsonify({'status': 'success', 'session_id': session.sessionid,'username': username}), 200
 
 
 
