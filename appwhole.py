@@ -664,7 +664,8 @@ def end_session():
     session_id = data.get('session_id')
 
     if not session_id:
-        return jsonify({'status': 'error', 'message': 'Session ID is required.'}), 400
+        flash('Session ID is required.', 'error')
+        return redirect(url_for('personal_page'))
 
     # Retrieve the active session
     session = Session.query.filter_by(sessionid=session_id, user_id=current_user.id, active=True).first()
@@ -680,7 +681,7 @@ def end_session():
 
     db.session.commit()
 
-    return jsonify({'status': 'success', 'message': 'Session ended successfully.'}), 200
+    return redirect(url_for('personal_page'))
 
 
 
