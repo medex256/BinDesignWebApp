@@ -153,31 +153,23 @@ def while_throwing():
 @app.route('/after_throwing', methods=['GET', 'POST'])
 @login_required
 def after_throwing():
-    if request.method == 'POST':
-        log_message()
-        return redirect(url_for('after_throwing'))  # Redirect to GET after POST
-    
-    # Get the last session data
-    bins = Bin.query.all()
-    last_session = Session.query.filter_by(
-        user_id=current_user.id,
-        active=False
-    ).order_by(
-        Session.session_date.desc(),
-        Session.end_time.desc()
-    ).first()
+    # Retrieve the latest session for the current user
+    last_session = Session.query.filter_by(user_id=current_user.id)\
+        .order_by(Session.session_date.desc(), Session.end_time.desc())\
+        .first()
 
     if not last_session:
-        flash('No completed sessions found.')
+        flash('No session data found.', 'warning')
         return redirect(url_for('home'))
 
-    # Calculate session duration
-    duration_minutes = (last_session.time_used.total_seconds() / 60)
+    # Ensure the session has ended
+    if last_session.active:
+        flash('Session is still active.', 'warning')
+        return redirect(url_for('home'))
 
-    # Prepare template data
+    # Prepare data for the template
     template_data = {
         'count': last_session.trash_count,
-        'bin_type': last_session.bin.bin_type,  
         'current_user': current_user
     }
 
@@ -221,8 +213,8 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/manage_users')
-@login_required
-#@admin_required
+@login_requiredF
+@admin_required
 def manage_users():
     if request.method == 'POST':
         log_message()
@@ -231,7 +223,7 @@ def manage_users():
 
 @app.route('/update_user_role/<int:user_id>', methods=['POST'])
 @login_required
-#@admin_required
+@admin_required
 def update_user_role(user_id):
     user = User.query.get_or_404(user_id)
     new_role = request.form.get('role')
@@ -363,7 +355,7 @@ def detect_result():
 
 @app.route('/manage_bins')
 @login_required
-#@admin_required
+@admin_required
 def manage_bins():
     if request.method == 'POST':
         log_message()
