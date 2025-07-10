@@ -247,7 +247,7 @@ BinDesignWebApp/
 ---
 
 ## 📈 Future Enhancements
-
+- **Easier deployment with better scaling**: Switch to docker container and auto CI\CD deployment
 - **IoT Network Expansion**: City-wide bin network integration
 - **Advanced Analytics**: Machine learning for waste prediction
 - **Mobile App Enhancement**: Native iOS/Android applications
@@ -273,23 +273,6 @@ All HTML templates are located in the templates directory, featuring:
 - Responsive design for mobile and desktop
 - Interactive dashboards and visualizations
 - User-friendly interface components
-
----
-
-## 📄 License
-
-This project is part of the EE3070 course at City University of Hong Kong.
-
----
-
-## 🤝 Contributing
-
-We welcome contributions to improve EcoTrackBin! Please feel free to:
-
-- Report bugs and issues
-- Suggest new features
-- Submit pull requests
-- Provide feedback on our demo
 
 ---
 
