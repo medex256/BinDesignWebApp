@@ -57,11 +57,13 @@ Watch our complete system demonstration showcasing all features:
 #### Hardware to Backend Communication Architecture
 
 ![Hardware to Backend Flow](./static/images/hardware-backend-flow.png)
+
 _Figure 1: ESP32 hardware interaction with Flask backend showing real-time communication, session management, and data synchronization_
 
 #### Complete Web Application Architecture
 
 ![Web Application Flow](./static/images/web-app-architecture.svg)
+
 _Figure 2: Full system architecture including user interactions, web interface, database operations, and admin dashboard_
 
 ### System Flow
