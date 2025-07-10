@@ -52,12 +52,50 @@ Watch our complete system demonstration showcasing all features:
 - **Cloud Hosting**: Google Cloud Platform
 - **AI Integration**: Hugging Face Transformers for waste classification
 
+### System Flow Diagrams
+
+#### Hardware to Backend Communication Architecture
+
+![Hardware to Backend Flow](./static/images/hardware-backend-flow.png)
+_Figure 1: ESP32 hardware interaction with Flask backend showing real-time communication, session management, and data synchronization_
+
+#### Complete Web Application Architecture
+
+![Web Application Flow](./static/images/web-app-architecture.png)
+_Figure 2: Full system architecture including user interactions, web interface, database operations, and admin dashboard_
+
 ### System Flow
 
 ```
 User → QR Code Scan → Session Start → Waste Disposal →
 Trash Counting → Session End → Data Sync → Leaderboard Update
 ```
+
+### Detailed Communication Flow
+
+1. **User Authentication & Session Initiation**
+
+   - User scans QR code via mobile app
+   - Session created in database
+   - ESP32 receives session notification
+
+2. **Hardware Interaction**
+
+   - Servo motor opens bin lid
+   - Ultrasonic sensor monitors waste insertion
+   - OLED display shows user information
+   - Real-time trash counting
+
+3. **Data Processing & Storage**
+
+   - Session data transmitted to Flask backend
+   - Database updates with user statistics
+   - Leaderboard rankings recalculated
+
+4. **User Feedback & Gamification**
+   - Session summary displayed
+   - Progress tracking updated
+   - Achievement notifications sent
 
 ---
 

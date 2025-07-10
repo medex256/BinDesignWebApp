@@ -61,7 +61,7 @@ class User(db.Model, UserMixin):
     sessions = db.relationship('Session', backref='user', lazy='dynamic')
     leaderboard_entry = db.relationship('Leaderboard', backref='user', uselist=False)
 
-    def generate_user_id(self):
+    def generate_user_id(self):# 
         while True:
             id = random.randint(10000000, 99999999)
             existing_user = User.query.filter_by(id=id).first()
@@ -213,7 +213,7 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/manage_users')
-@login_requiredF
+@login_required
 @admin_required
 def manage_users():
     if request.method == 'POST':
@@ -695,6 +695,7 @@ def update_trash_count():
 
 
 @app.route('/get_active_session', methods=['GET'])
+#
 def get_active_session():
     bin_id = request.args.get('bin_id', type=int)
 
