@@ -208,15 +208,6 @@ BinDesignWebApp/
 
 ---
 
-## 👥 Team Members
-
-- **Kaiyrkhan Madi** - Hardware Development & System Integration
-- **Fernandez Lance Saquilabon** - Full-Stack Development & UI/UX
-- **Wong Wing Yui** - Backend Development & Database Management
-- **Tse Tak Sum** - AI Integration & Mobile Development
-
----
-
 ## 📈 Future Enhancements
 
 - **IoT Network Expansion**: City-wide bin network integration
