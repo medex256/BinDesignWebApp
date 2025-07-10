@@ -61,7 +61,7 @@ _Figure 1: ESP32 hardware interaction with Flask backend showing real-time commu
 
 #### Complete Web Application Architecture
 
-![Web Application Flow](./static/images/web-app-architecture.png)
+![Web Application Flow](./static/images/web-app-architecture.svg)
 _Figure 2: Full system architecture including user interactions, web interface, database operations, and admin dashboard_
 
 ### System Flow
